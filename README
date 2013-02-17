@@ -1,0 +1,8 @@
+Escape from Wikipedia
+Aaron Graham-Horowitz
+
+I had this silly idea for a platformer style game where you run around the
+inside of a Wikipedia page, jumping from word to word and following hyperlinks.
+
+Right now I'm just trying to put together a proof-of-concept using pygame and
+rabbyt. We'll see how it turns out.
