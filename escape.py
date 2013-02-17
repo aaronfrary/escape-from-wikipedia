@@ -81,32 +81,32 @@ def unit_vec(start, end):
 def font_check(attr):
     if Word.WIKIFONT[attr] == None:
         if attr == REGULAR:
-            Word.WIKI_REGULAR = [pygame.font.Font("fonts/arial.ttf",
+            Word.WIKI_REGULAR = [pygame.font.Font("fonts\\arial.ttf",
                                                   SMALL_FONT_SIZE),
-                                 pygame.font.Font("fonts/arial.ttf",
+                                 pygame.font.Font("fonts\\arial.ttf",
                                                   MEDIUM_FONT_SIZE),
-                                 pygame.font.Font("fonts/arial.ttf",
+                                 pygame.font.Font("fonts\\arial.ttf",
                                                   LARGE_FONT_SIZE)]
         elif attr == BOLD:
-            Word.WIKI_BOLD = [pygame.font.Font("fonts/arialbd.ttf",
+            Word.WIKI_BOLD = [pygame.font.Font("fonts\\arialbd.ttf",
                                                SMALL_FONT_SIZE),
-                              pygame.font.Font("fonts/arialbd.ttf",
+                              pygame.font.Font("fonts\\arialbd.ttf",
                                                MEDIUM_FONT_SIZE),
-                              pygame.font.Font("fonts/arialbd.ttf",
+                              pygame.font.Font("fonts\\arialbd.ttf",
                                                LARGE_FONT_SIZE)]
         elif attr == ITALIC:
-            Word.WIKI_ITALIC = [pygame.font.Font("fonts/ariali.ttf",
+            Word.WIKI_ITALIC = [pygame.font.Font("fonts\\ariali.ttf",
                                                  SMALL_FONT_SIZE),
-                                pygame.font.Font("fonts/ariali.ttf",
+                                pygame.font.Font("fonts\\ariali.ttf",
                                                  MEDIUM_FONT_SIZE),
-                                pygame.font.Font("fonts/ariali.ttf",
+                                pygame.font.Font("fonts\\ariali.ttf",
                                                  LARGE_FONT_SIZE)]
         elif attr == BOLDITAL:
-            Word.WIKI_BOLDITAL = [pygame.font.Font("fonts/arialbi.ttf",
+            Word.WIKI_BOLDITAL = [pygame.font.Font("fonts\\arialbi.ttf",
                                                    SMALL_FONT_SIZE),
-                                  pygame.font.Font("fonts/arialbi.ttf",
+                                  pygame.font.Font("fonts\\arialbi.ttf",
                                                    MEDIUM_FONT_SIZE),
-                                  pygame.font.Font("fonts/arialbi.ttf",
+                                  pygame.font.Font("fonts\\arialbi.ttf",
                                                    LARGE_FONT_SIZE)]
         Word.WIKIFONT = {REGULAR : Word.WIKI_REGULAR,
                          BOLD : Word.WIKI_BOLD,
@@ -226,9 +226,8 @@ class Jumper(MySprite):
 
 class Player(Jumper):
     def __init__(self, pos):
-        Jumper.__init__(self, texture="images/player.png")
+        Jumper.__init__(self, texture="images\\player.png")
         self.xy = pos
-
 
 
 def terminate():
@@ -246,7 +245,6 @@ def main():
     rabbyt.set_default_attribs()
     #pygame.display.set_icon(pygame.image.load("images.gameicon.png"))
     pygame.display.set_caption('<ENTER TITLE HERE>')
-    gl.glEnable(GL_TEXTURE_2D)
 
     while True:
         runGame()       # Allows restarts
@@ -261,7 +259,7 @@ def runGame():
     monsters = []       # Stores all monsters (mobile, harmful objects)
 
     for i in range(144):
-        plat = MySprite("images/platform1.png")
+        plat = MySprite("images\\platform1.png")
         plat.xy = (random.randint(-2 * WINWIDTH, 2 * WINWIDTH),
                    random.randint(-2 * WINHEIGHT, 2 * WINHEIGHT))
         plat.ff = 0.9
