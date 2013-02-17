@@ -61,13 +61,9 @@ LARGE_FONT_SIZE = 48
 
 CAMERASLACK = 80       # How far from the center the player moves before
                        # moving the camera.
-G_ACCEL = -0.1         # General strength of gravity.
-BASE_SPEED = 0.45      # Horizontal acceleration rate for average creature.
-BASE_JUMPSPEED = 5     # Vertical speed (not accel) of average creature's jump.
-#GRAPPLE_TIME = 0.1       # Inverse speed of grappling hook: how long it takes
-                       # to move 1 unit.
-
-MAXHEALTH = 3          # How much health the player starts with.
+G_ACCEL = -0.003         # General strength of gravity.
+BASE_SPEED = 0.1      # Horizontal acceleration rate for average creature.
+BASE_JUMPSPEED = 0.9     # Vertical speed (not accel) of average creature's jump.
 
 def unit_vec(start, end):
     """Helper function, return unit vector between two points."""
