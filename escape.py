@@ -15,13 +15,10 @@ more details.
 You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-# This version uses pygame and rabbyt, which works great, except that rabbyt
-# sprites only take image files or GL texture ids, so for our word sprites
-# we make rabbyt sprites without images and use pygame to paint their images
-# onto one static background.
-
 
 import sys, math, random, pygame, rabbyt
+from OpenGL.GL import *
+from OpenGL.GLU import *
 from pygame.locals import *
 
 # Make sure we can use our .png and other images
@@ -38,9 +35,6 @@ WINWIDTH = 640         # Width of the program's window, in pixels.
 WINHEIGHT = 480        # Height in pixels.
 HALF_WINWIDTH = int(WINWIDTH / 2)
 HALF_WINHEIGHT = int(WINHEIGHT / 2)
-
-PAGEWIDTH = 4 * WINWIDTH
-PAGEHEIGHT = 8 * WINHEIGHT # won't be necessary once we actually scrape text
 
 BLACK    = (  0,   0,   0)
 WHITE    = (255, 255, 255)
@@ -109,6 +103,26 @@ def font_check(attr):
                          ITALIC : Word.WIKI_ITALIC,
                          BOLDITAL : Word.WIKI_BOLDITAL}
 
+def get_texture(surf):
+    """Helper function, create texture to display `text' and return id."""
+    # Open unused texture id
+    tex_id = glGenTextures(1)
+    glBindTexture(GL_TEXTURE_2D, tex_id)
+    # Take pixel data in byte order
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
+    # Ensure sane defaults are set for parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    # Ignore lighting and effects
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
+    # Upload image data to texture
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surf.get_width(),
+            surf.get_height(), 0, GL_RGBA, GL_UNSIGNED_BYTE,
+            pygame.image.tostring(surf, "RGBA", 1))
+    return tex_id
+
 
 class MySprite(rabbyt.sprites.Sprite):
     def render(self):
@@ -123,8 +137,14 @@ class MySprite(rabbyt.sprites.Sprite):
 
 class Page:
     def __init__(self, url):
+        #TODO: Fetch words from url
         self.url = url
-        #TODO: Finish
+
+    def render(self, screen):
+        global camerax, cameray
+        r = pygame.Rect(camerax - HALF_WINWIDTH, cameray + HALF_WINHEIGHT,
+                        camerax + HALF_WINWIDTH, cameray - HALF_WINHEIGHT)
+        screen.blit(self.image, (0,0), area=r)
 
 
 class Word(MySprite):
@@ -133,7 +153,7 @@ class Word(MySprite):
 
     Constructors:
         'text' : The character string of the Word.
-        'pos'  : The starting position (in the page coordinate system)
+        'pos'  : The starting position
                  of the bottom-left corner.
         'attr' : 'bold', 'italic', 'bold-italic', or "" for regular.
         'size' : 0 for small font, 1 for medium, or 2 for large.
@@ -148,7 +168,7 @@ class Word(MySprite):
     WIKIFONT = {REGULAR : WIKI_REGULAR, BOLD : WIKI_BOLD, ITALIC : WIKI_ITALIC,
             BOLDITAL : WIKI_BOLDITAL}
 
-    def __init__(self, text, page, pos, attr=REGULAR, size = 0, link=""):
+    def __init__(self, text, pos, attr=REGULAR, size = 0, link=""):
         font_check(attr)
         self.ff = 0.9
         self.text = text
@@ -156,12 +176,14 @@ class Word(MySprite):
         if link == "": color = BLACK
         else: color = BLUE
         image = Word.WIKIFONT[attr][size].render(text, True, color)
-        rect = self.image.get_rect(bottomleft=pos)
-        # Initialize blank sprite with correct shape
-        MySprite.__init__(shape=(rect.left, rect.top, rect.right, rect.bottom))
-        # Paste image to background
-        page.surf.blit(image, rect)
-
+        if text == "abc":
+            image = pygame.image.load("images\\player.png")
+        # Initialize sprite
+        bottom, left = pos
+        right = left + image.get_width()
+        top = bottom + image.get_height()
+        MySprite.__init__(self, texture=get_texture(image),
+                shape=[left, top, right, bottom])
 
     def is_link(self):
         return not (self.hyperlink == "")
@@ -234,18 +256,19 @@ def terminate():
 def main():
     """Start and setup"""
     pygame.init()
-    pygame.display.set_mode( (WINWIDTH, WINHEIGHT),
+    screen = pygame.display.set_mode( (WINWIDTH, WINHEIGHT),
                              pygame.OPENGL | pygame.DOUBLEBUF )
     # (0,0) is center point of screen
     rabbyt.set_viewport( (WINWIDTH, WINHEIGHT) )
     rabbyt.set_default_attribs()
     #pygame.display.set_icon(pygame.image.load("images.gameicon.png"))
-    pygame.display.set_caption('<ENTER TITLE HERE>')
+    pygame.display.set_caption('Escape from Wikipedia')
+    glEnable(GL_TEXTURE_2D)
 
     while True:
-        runGame()       # Allows restarts
+        runGame(screen)       # Allows restarts
 
-def runGame():
+def runGame(screen):
     """Initialize new game."""
     global camerax, cameray
     camerax = 0
@@ -260,6 +283,9 @@ def runGame():
                    random.randint(-2 * WINHEIGHT, 2 * WINHEIGHT))
         plat.ff = 0.9
         platforms.append(plat)
+    platforms.append(Word("abc", (-55, 55)))
+    platforms.append(Word("abcdefg", (55, 55)))
+    platforms.append(Word("abcefghijklmnop", (55, -55)))
 
     player = Player((0,0))
 
@@ -322,12 +348,12 @@ def runGame():
         elif player.y - cameray > CAMERASLACK:
             cameray = player.y - CAMERASLACK
 
-        # Draw screen TODO: blit page instead
+        # Draw screen
         rabbyt.clear(WHITE)
         # Need to tell Rabbyt what time it is every frame
         rabbyt.set_time(pygame.time.get_ticks() / TIME_FACTOR)
 
-        rabbyt.render_unsorted(platforms)
+        rabbyt.render_unsorted(platforms[1:]) # Don't try to render the word
         player.render()
 
         pygame.display.flip()
