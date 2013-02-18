@@ -49,15 +49,15 @@ BOLD = 1
 ITALIC = 2
 BOLDITAL = 3
 
-SMALL_FONT_SIZE = 20
+SMALL_FONT_SIZE = 24
 MEDIUM_FONT_SIZE = 42
 LARGE_FONT_SIZE = 48
 
 CAMERASLACK = 80       # How far from the center the player moves before
                        # moving the camera.
-G_ACCEL = -0.003         # General strength of gravity.
-BASE_SPEED = 0.1      # Horizontal acceleration rate for average creature.
-BASE_JUMPSPEED = 0.9     # Vertical speed (not accel) of average creature's jump.
+G_ACCEL = -0.004       # General strength of gravity.
+BASE_SPEED = 0.13      # Horizontal acceleration rate for average creature.
+BASE_JUMPSPEED = 1.15  # Vertical speed (not accel) of average creature's jump.
 
 def unit_vec(start, end):
     """Helper function, return unit vector between two points."""
@@ -178,8 +178,6 @@ class Word(MySprite):
         if link == "": color = BLACK
         else: color = BLUE
         image = Word.WIKIFONT[attr][size].render(text, True, color)
-        if text == "abc":
-            image = pygame.image.load("images\\player.png")
         # Initialize sprite
         bottom, left = pos
         right = left + image.get_width()
@@ -280,14 +278,10 @@ def runGame():
     monsters = []       # Stores all monsters (mobile, harmful objects)
 
     for i in range(144):
-        plat = MySprite("images\\platform1.png")
-        plat.xy = (random.randint(-2 * WINWIDTH, 2 * WINWIDTH),
-                   random.randint(-2 * WINHEIGHT, 2 * WINHEIGHT))
-        plat.ff = 0.9
-        platforms.append(plat)
-    platforms.append(Word("abc", (-55, 55)))
-    platforms.append(Word("abcdefg", (55, 55)))
-    platforms.append(Word("abcefghijklmnop", (55, -55)))
+        x = random.randint(-2 * WINWIDTH, 2 * WINWIDTH)
+        y = random.randint(-2 * WINHEIGHT, 2 * WINHEIGHT)
+        sz = random.randint(0, 2)
+        platforms.append(Word("Hyperion!", (x, y), size=sz))
 
     player = Player((0,0))
 
