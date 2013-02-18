@@ -125,6 +125,14 @@ def get_texture(surf):
 
 
 class MySprite(rabbyt.sprites.Sprite):
+    def __init__(self, texture=None, shape=None, tex_shape=(0,1,1,0)):
+        if isinstance(texture, basestring):
+            image = pygame.image.load(texture)
+            texture = get_texture(image)
+            shape = [0, image.get_height(), image.get_width(), 0]
+        rabbyt.sprites.Sprite.__init__(self, texture=texture, shape=shape,
+                          tex_shape=tex_shape)
+
     def render(self):
         #TODO: reimplement transforming OpenGL modelview matrix directly.
         global camerax, cameray
@@ -139,12 +147,6 @@ class Page:
     def __init__(self, url):
         #TODO: Fetch words from url
         self.url = url
-
-    def render(self, screen):
-        global camerax, cameray
-        r = pygame.Rect(camerax - HALF_WINWIDTH, cameray + HALF_WINHEIGHT,
-                        camerax + HALF_WINWIDTH, cameray - HALF_WINHEIGHT)
-        screen.blit(self.image, (0,0), area=r)
 
 
 class Word(MySprite):
@@ -256,7 +258,7 @@ def terminate():
 def main():
     """Start and setup"""
     pygame.init()
-    screen = pygame.display.set_mode( (WINWIDTH, WINHEIGHT),
+    pygame.display.set_mode( (WINWIDTH, WINHEIGHT),
                              pygame.OPENGL | pygame.DOUBLEBUF )
     # (0,0) is center point of screen
     rabbyt.set_viewport( (WINWIDTH, WINHEIGHT) )
@@ -266,9 +268,9 @@ def main():
     glEnable(GL_TEXTURE_2D)
 
     while True:
-        runGame(screen)       # Allows restarts
+        runGame()       # Allows restarts
 
-def runGame(screen):
+def runGame():
     """Initialize new game."""
     global camerax, cameray
     camerax = 0
