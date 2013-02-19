@@ -118,15 +118,24 @@ def getWords(html_doc):
         if d.name == u'title':
             new_words, x, y = strToWords(getStr(d), y, size=2)
         elif d.name == u'h2':
-            new_words, x, y = strToWords(d.string, y, size=1)
+            new_words, x, y = strToWords(getStr(d), y, size=1)
         elif d.name == u'dt':
-            new_words, x, y = strToWords(d.string, y, attr=BOLD, size=1)
+            new_words, x, y = strToWords(getStr(d), y, attr=BOLD, size=1)
         elif d.name == u'p':
             new_words, x, y = getParWords(d, y)
         words.extend(new_words)
         if d.name == u'h2' and d.string == u'References':
             break # That's as far down as we go
     return words
+
+def getStr(tag):
+    """Strips away `div' and `span' tags obscuring text."""
+    if tag.string is not None:
+        return tag.string
+    elif tag.name in (u'span', u'div'):
+        return getStr(tag)
+    else:
+        return ""
 
 def getParWords(tag, y, x=0, attr=REGULAR, link = ""):
     """Return all `Word's in an HTML paragraph, with formatting."""
@@ -141,7 +150,7 @@ def getParWords(tag, y, x=0, attr=REGULAR, link = ""):
             new_words, x, y = getParWords(c, y, x, ITAL, link)
         elif c.name == u'a':
             new_words, x, y = getParWords(c, y, x, attr, c['href'])
-        elif c.name == u'Q':
+        elif c.name == u'Q': # TODO: add in ul, li
             new_words, x, y = getParWords(c, y, x)
         words.extend(new_words)
     return (words, x, y)
@@ -196,7 +205,7 @@ class Word(MySprite):
         MySprite.__init__(self, texture=utils.getTexture(image),
                 shape=[left, top, right, bottom])
 
-    def is_link(self):
+    def isLink(self):
         return not (self.hyperlink == "")
 
 
