@@ -105,7 +105,8 @@ def getHTML(addr):
 
 def getWords(html_doc):
     """Return all `Word's in an HTML string, with formatting."""
-    soup = bs4.BeautifulSoup(html_doc, "lxml", from_encoding="utf-8")
+    soup = bs4.BeautifulSoup(html_doc, from_encoding="utf-8")
+    #soup = bs4.BeautifulSoup(html_doc, "lxml", from_encoding="utf-8")
     y = 0
     words = []
     # Find relevant text-containing elements
@@ -147,7 +148,7 @@ def getParWords(tag, y, x=0, attr=REGULAR, link = ""):
         elif c.name in (u'b', u'strong'):
             new_words, x, y = getParWords(c, y, x, BOLD, link)
         elif c.name in (u'i', u'em'):
-            new_words, x, y = getParWords(c, y, x, ITAL, link)
+            new_words, x, y = getParWords(c, y, x, ITALIC, link)
         elif c.name == u'a':
             new_words, x, y = getParWords(c, y, x, attr, c['href'])
         elif c.name == u'Q': # TODO: add in ul, li

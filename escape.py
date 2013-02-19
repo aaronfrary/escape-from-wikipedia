@@ -21,7 +21,7 @@ from pygame.locals import *
 from constants import *
 import utils, globalvars
 from sprites import Player
-from scrape_wiki import Page, Word
+from scrape_wiki import Page
 
 # Make sure we can use our .png and other images
 assert(pygame.image.get_extended() > 0)
@@ -60,17 +60,12 @@ def runGame():
     globalvars.camx = 0
     globalvars.camy = 0
 
-    platforms = []      # Stores all platforms (static, solid objects)
-    #monsters = []       # Stores all monsters (mobile, harmful objects)
-
-    for i in range(88):
-        x = random.randint(-2 * WINWIDTH, 2 * WINWIDTH)
-        y = random.randint(-2 * WINHEIGHT, 2 * WINHEIGHT)
-        sz = random.randint(0, 3) % 3
-        platforms.append(Word("Hyperion!", (x, y), size=sz))
-
-    #page = Page("http://en.wikipedia.org/wiki/Solariellidae")
+    page = Page("http://en.wikipedia.org/wiki/Solariellidae")
     player = Player((0,0))
+
+    # Debug:
+    for w in page.words:
+        print w.text
 
     # Main loop
     while True:
@@ -101,8 +96,7 @@ def runGame():
         player.update()
 
         # Check for player-platform collisions
-        #collisions = rabbyt.collisions.aabb_collide_single(player, page.words)
-        collisions = rabbyt.collisions.aabb_collide_single(player, platforms)
+        collisions = rabbyt.collisions.aabb_collide_single(player, page.words)
         # Player forced out of platforms by most direct route, more or less;
         # by checking platform top first, player gains "stair climbing"
         # ability for stairs up to 1/3 player height.
@@ -137,8 +131,7 @@ def runGame():
         # Need to tell Rabbyt what time it is every frame
         rabbyt.set_time(pygame.time.get_ticks() / TIME_FACTOR)
 
-        rabbyt.render_unsorted(platforms)
-        #rabbyt.render_unsorted(page.words)
+        rabbyt.render_unsorted(page.words)
         player.render()
 
         pygame.display.flip()
