@@ -61,11 +61,11 @@ def runGame():
     globalvars.camy = 0
 
     page = Page("http://en.wikipedia.org/wiki/Solariellidae")
-    player = Player((0,0))
+    player = Player((10,200))
 
     # Debug:
     for w in page.words:
-        print w.text
+        print w.text + " " + str((w.left, w.bottom))
 
     # Main loop
     while True:

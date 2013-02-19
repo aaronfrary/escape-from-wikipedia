@@ -200,7 +200,7 @@ class Word(MySprite):
         else: color = BLUE
         image = Word.WIKIFONT[attr][size].render(text, True, color)
         # Initialize sprite
-        bottom, left = pos
+        left, bottom = pos
         right = left + image.get_width()
         top = bottom + image.get_height()
         MySprite.__init__(self, texture=utils.getTexture(image),
