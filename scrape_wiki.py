@@ -21,6 +21,9 @@ from sprites import MySprite
 from constants import *
 #import lxml
 
+TEXT_CROPX = -2
+TEXT_CROPY = -5
+
 HTML404 = """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML><HEAD><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
 <TITLE>ERROR: The requested URL could not be retrieved</TITLE>
@@ -199,11 +202,14 @@ class Word(MySprite):
         if link == "": color = BLACK
         else: color = BLUE
         image = Word.WIKIFONT[attr][size].render(text, True, color)
+        rect = image.get_rect()
+        cropped_image = image.subsurface(rect.inflate(TEXT_CROPX * (size + 1),
+                                                      TEXT_CROPY * (size + 1)))
         # Initialize sprite
         left, bottom = pos
-        right = left + image.get_width()
-        top = bottom + image.get_height()
-        MySprite.__init__(self, texture=utils.getTexture(image),
+        right = left + cropped_image.get_width()
+        top = bottom + cropped_image.get_height()
+        MySprite.__init__(self, texture=utils.getTexture(cropped_image),
                 shape=[left, top, right, bottom])
 
     def isLink(self):
