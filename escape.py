@@ -64,8 +64,8 @@ def runGame():
     player = Player((10,200))
 
     # Debug:
-    for w in page.words:
-        print w.text + " " + str((w.left, w.bottom))
+    #for w in page.words:
+    #    print w.text + " " + str((w.left, w.bottom))
 
     # Main loop
     while True:

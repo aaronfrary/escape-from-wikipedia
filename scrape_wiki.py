@@ -111,26 +111,33 @@ def getWords(html_doc):
     soup = bs4.BeautifulSoup(html_doc, from_encoding="utf-8")
     #soup = bs4.BeautifulSoup(html_doc, "lxml", from_encoding="utf-8")
     y = 0
-    words = []
+    # Start by getting title
+    words, _, _ = strToWords(getStr(soup.title), y, size=2)
     # Find relevant text-containing elements
-    for d in soup.descendants:
-        if not isinstance(d, bs4.element.Tag):
+    for tag in soup.body.find_all(['h2', 'dt', 'p']):
+        if badParents(tag):
             continue
         new_words = []
-        if not words == []:
-            y = words[-1].bottom - PARSPACE
-        if d.name == u'title':
-            new_words, x, y = strToWords(getStr(d), y, size=2)
-        elif d.name == u'h2':
-            new_words, x, y = strToWords(getStr(d), y, size=1)
-        elif d.name == u'dt':
-            new_words, x, y = strToWords(getStr(d), y, attr=BOLD, size=1)
-        elif d.name == u'p':
-            new_words, x, y = getParWords(d, y)
+        y = words[-1].bottom - PARSPACE
+        if tag.name == u'h2':
+            new_words, _, _ = strToWords(getStr(tag), y, size=1)
+        elif tag.name == u'dt':
+            new_words, _, _ = strToWords(getStr(tag), y, attr=BOLD, size=1)
+        elif tag.name == u'p':
+            new_words, _, _ = getParWords(tag, y)
         words.extend(new_words)
-        if d.name == u'h2' and d.string == u'References':
+        if tag.name == u'h2' and tag.string == u'References':
             break # That's as far down as we go
     return words
+
+def badParents(tag):
+    """Don't pick up paragraphs, etc. contained in structures not shown."""
+    p = tag.parent
+    while p is not None:
+        if p.name == u'table':
+            return True
+        p = p.parent
+    return False
 
 def getStr(tag):
     """Strips away `div' and `span' tags obscuring text."""
