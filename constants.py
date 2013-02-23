@@ -32,7 +32,7 @@ PLAYER_SCALE = 0.6
 CAMERASLACK = 80        # How far from the center the player moves before
                         # moving the camera.
 G_ACCEL = -0.0042       # General strength of gravity.
-BASE_SPEED = 0.11       # Horizontal acceleration rate for average creature.
+BASE_SPEED = 0.1        # Horizontal acceleration rate for average creature.
 BASE_JUMPSPEED = 0.92   # Vertical speed (not accel) of average creature's jump.
 
 BLACK    = (  0,   0,   0)

@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import random, pygame, rabbyt
+import math, pygame, rabbyt
 import utils, globalvars
 from constants import *
 
@@ -62,8 +62,8 @@ class Jumper(MySprite):
         else:
             ff = self.plat.ff   # Friction factor of surface
 
-        rff = 1 - ff ** 4   # Reverse ff: effect of friction
-                                  # on acceleration.
+        rff = 1 - ff ** 4       # Reverse ff: effect of friction
+                                # on acceleration.
         if self.goingLeft:
             a[0] = -self.speed * rff
         if self.goingRight:
@@ -97,3 +97,4 @@ class Player(Jumper):
         Jumper.__init__(self, texture="images\\player.png")
         self.scale = PLAYER_SCALE
         self.xy = pos
+

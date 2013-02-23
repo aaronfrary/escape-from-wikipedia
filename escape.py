@@ -62,6 +62,7 @@ def runGame():
 
     page = Page("http://en.wikipedia.org/wiki/Solariellidae")
     player = Player(PLAYER_START)
+    print len(page.words)
 
     # Main loop
     while True:
@@ -83,8 +84,8 @@ def runGame():
                 elif event.key in DOWN_KEYS and player.plat is not None:
                     # Enter hyperlink
                     if not player.plat.hyperlink == "":
-                        print player.plat.hyperlink
                         page = Page(player.plat.hyperlink)
+                        print len(page.words)
                         player.xy = PLAYER_START
             elif event.type == KEYUP:
                 if event.key in LEFT_KEYS:
