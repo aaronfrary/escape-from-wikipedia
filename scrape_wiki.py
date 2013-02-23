@@ -103,7 +103,7 @@ def getHTML(addr):
         s = f.read()
         f.close()
         return s
-    except URLError:
+    except urllib2.URLError:
         return HTML404.format(addr)
 
 def getWords(html_doc):
@@ -152,6 +152,7 @@ def getParWords(tag, y, x=0, attr=REGULAR, link = ""):
     """Return all `Word's in an HTML paragraph, with formatting."""
     words = []
     for c in tag.children:
+        new_words = []
         if isinstance(c, bs4.element.NavigableString):
             new_words, x, y = strToWords(unicode(c), y, x=x,
                     attr=attr, link=link)
@@ -160,7 +161,10 @@ def getParWords(tag, y, x=0, attr=REGULAR, link = ""):
         elif c.name in (u'i', u'em'):
             new_words, x, y = getParWords(c, y, x, ITALIC, link)
         elif c.name == u'a':
-            new_words, x, y = getParWords(c, y, x, attr, c['href'])
+            link = c['href']
+            if link[:6] == "/wiki/":
+                link = "http://en.wikipedia.org" + link
+            new_words, x, y = getParWords(c, y, x, attr, link)
         elif c.name == u'Q': # TODO: add in ul, li
             new_words, x, y = getParWords(c, y, x)
         words.extend(new_words)
@@ -169,7 +173,7 @@ def getParWords(tag, y, x=0, attr=REGULAR, link = ""):
 def strToWords(s, y, x=0, attr=REGULAR, size=0, link=""):
     """Return string of words as `Word's, with correct locations."""
     words = []
-    for word in s.split():
+    for word in s.replace('\n', '').split():
         w = Word(word, (x, y), attr, size, link)
         if w.right >= PAGEWIDTH:
             w.left = 0

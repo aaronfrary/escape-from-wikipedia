@@ -61,11 +61,7 @@ def runGame():
     globalvars.camy = 0
 
     page = Page("http://en.wikipedia.org/wiki/Solariellidae")
-    player = Player((10,200))
-
-    # Debug:
-    #for w in page.words:
-    #    print w.text + " " + str((w.left, w.bottom))
+    player = Player(PLAYER_START)
 
     # Main loop
     while True:
@@ -84,6 +80,12 @@ def runGame():
                     player.goingLeft = False
                 elif event.key in UP_KEYS:
                     player.jump()
+                elif event.key in DOWN_KEYS and player.plat is not None:
+                    # Enter hyperlink
+                    if not player.plat.hyperlink == "":
+                        print player.plat.hyperlink
+                        page = Page(player.plat.hyperlink)
+                        player.xy = PLAYER_START
             elif event.type == KEYUP:
                 if event.key in LEFT_KEYS:
                     player.goingLeft = False

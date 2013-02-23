@@ -26,6 +26,7 @@ HSPACE = 48
 VSPACE = 60
 PARSPACE = 160
 
+PLAYER_START = (10,200)
 PLAYER_SCALE = 0.6
 
 CAMERASLACK = 80        # How far from the center the player moves before
