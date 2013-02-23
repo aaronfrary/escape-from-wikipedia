@@ -19,7 +19,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 import sys, random, pygame, rabbyt
 from pygame.locals import *
 from constants import *
-import utils, globalvars
+import utils
 from sprites import Player
 from scrape_wiki import Page
 
@@ -57,8 +57,8 @@ def main():
 
 def runGame():
     """Initialize new game."""
-    globalvars.camx = 0
-    globalvars.camy = 0
+    camx = 0
+    camy = 0
 
     page = Page("http://en.wikipedia.org/wiki/Solariellidae")
     player = Player(PLAYER_START)
@@ -120,14 +120,18 @@ def runGame():
 
         # adjust camerax and cameray if beyond the "camera slack"
         # TODO: Reimplement using Anims
-        if globalvars.camx - player.x > CAMERASLACK:
-            globalvars.camx = player.x + CAMERASLACK
-        elif player.x - globalvars.camx > CAMERASLACK:
-            globalvars.camx = player.x - CAMERASLACK
-        if globalvars.camy - player.y > CAMERASLACK:
-            globalvars.camy = player.y + CAMERASLACK
-        elif player.y - globalvars.camy > CAMERASLACK:
-            globalvars.camy = player.y - CAMERASLACK
+        if camx - player.x > CAMERASLACK:
+            utils.scroll(player.x + CAMERASLACK - camx, 0)
+            camx = player.x + CAMERASLACK
+        elif player.x - camx > CAMERASLACK:
+            utils.scroll(player.x - CAMERASLACK - camx, 0)
+            camx = player.x - CAMERASLACK
+        if camy - player.y > CAMERASLACK:
+            utils.scroll(0, player.y + CAMERASLACK - camy)
+            camy = player.y + CAMERASLACK
+        elif player.y - camy > CAMERASLACK:
+            utils.scroll(0, player.y - CAMERASLACK - camy)
+            camy = player.y - CAMERASLACK
 
         # Draw screen
         rabbyt.clear(WHITE)

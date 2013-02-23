@@ -32,3 +32,6 @@ def getTexture(surf):
             pygame.image.tostring(surf, "RGBA", 1))
     return tex_id
 
+def scroll(x, y):
+    glTranslatef(-x, -y, 0)
+

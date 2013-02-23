@@ -16,7 +16,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import math, pygame, rabbyt
-import utils, globalvars
+import utils
 from constants import *
 
 
@@ -28,15 +28,6 @@ class MySprite(rabbyt.sprites.Sprite):
             shape = [0, image.get_height(), image.get_width(), 0]
         rabbyt.sprites.Sprite.__init__(self, texture=texture, shape=shape,
                           tex_shape=tex_shape)
-
-    def render(self):
-        #TODO: reimplement transforming OpenGL modelview matrix directly.
-        # Or maybe with rabbyt `anims'.
-        self.x -= globalvars.camx
-        self.y -= globalvars.camy
-        rabbyt.sprites.Sprite.render(self)
-        self.x += globalvars.camx
-        self.y += globalvars.camy
 
 
 class Jumper(MySprite):
