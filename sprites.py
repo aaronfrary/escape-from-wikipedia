@@ -39,12 +39,12 @@ class Jumper(MySprite):
         self.jumpSpeed = jumpSpeed * BASE_JUMPSPEED
         self.plat = None
         self.speed = speed * BASE_SPEED
-        self.goingLeft = False
-        self.goingRight = False
+        self.goingleft = False
+        self.goingright = False
         self.velocity = [0.0, 0.0]
 
     def update(self):
-        assert(not (self.goingLeft and self.goingRight))
+        assert(not (self.goingleft and self.goingright))
         a = [0.0, 0.0]   # Acceleration.
 
         if self.plat is None:
@@ -55,19 +55,19 @@ class Jumper(MySprite):
 
         rff = 1 - ff ** 4       # Reverse ff: effect of friction
                                 # on acceleration.
-        if self.goingLeft:
+        if self.goingleft:
             a[0] = -self.speed * rff
-        if self.goingRight:
+        if self.goingright:
             a[0] = self.speed * rff
 
         self.velocity[0] *= ff
-        self.velocity[1] *= ff
 
         self.velocity[0] += a[0]
         self.velocity[1] += a[1]
 
         self.x += self.velocity[0]
         self.y += self.velocity[1]
+        print self.velocity
         
         # Detect walk off platform
         if self.plat is not None:

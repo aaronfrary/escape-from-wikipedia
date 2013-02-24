@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import urllib2, bs4, pygame
+import urllib2, bs4, re, pygame
 import utils
 from sprites import MySprite
 from constants import *
 #import lxml
 
 TEXT_CROPX = -2
-TEXT_CROPY = -5
+TEXT_CROPY = -4
 
 HTML404 = """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML><HEAD><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
@@ -108,6 +108,13 @@ def getHTML(addr):
 
 def getWords(html_doc):
     """Return all `Word's in an HTML string, with formatting."""
+    # Get rid of tags that won't be used
+    pattern = re.compile('<table.*?</table>', re.DOTALL)
+    html_doc = pattern.sub('', html_doc)
+    # Preformat so we don't get floating punctuation, etc.
+    pattern = re.compile('(</\S+>)(\S+)')
+    html_doc = pattern.sub(lambda m: m.group(2) + m.group(1), html_doc)
+    # Parse
     soup = bs4.BeautifulSoup(html_doc, from_encoding="utf-8")
     #soup = bs4.BeautifulSoup(html_doc, "lxml", from_encoding="utf-8")
     y = 0
@@ -115,8 +122,6 @@ def getWords(html_doc):
     words, _, _ = strToWords(getStr(soup.title), y, size=2)
     # Find relevant text-containing elements
     for tag in soup.body.find_all(['h2', 'dt', 'p']):
-        if badParents(tag):
-            continue
         new_words = []
         y = words[-1].bottom - PARSPACE
         if tag.name == u'h2':
@@ -126,27 +131,22 @@ def getWords(html_doc):
         elif tag.name == u'p':
             new_words, _, _ = getParWords(tag, y)
         words.extend(new_words)
-        if tag.name == u'h2' and tag.string == u'References':
+        if tag.name == u'h2' and words[-1].text == u'References':
             break # That's as far down as we go
     return words
 
-def badParents(tag):
-    """Don't pick up paragraphs, etc. contained in structures not shown."""
-    p = tag.parent
-    while p is not None:
-        if p.name == u'table':
-            return True
-        p = p.parent
-    return False
-
 def getStr(tag):
     """Strips away `div' and `span' tags obscuring text."""
-    if tag.string is not None:
-        return tag.string
-    elif tag.name in (u'span', u'div'):
-        return getStr(tag)
-    else:
-        return ""
+    for c in tag.children:
+        if isinstance(c, bs4.element.NavigableString):
+            if not c.isspace():   # <span> tags are the worst.
+                return unicode(c)
+        # ignore 'edit' link
+        elif c.name in (u'span', u'div') and not c['class'] == [u'editsection']:
+            end = getStr(c)
+            if end is not None:
+                return end
+    return None
 
 def getParWords(tag, y, x=0, attr=REGULAR, link = ""):
     """Return all `Word's in an HTML paragraph, with formatting."""
@@ -161,10 +161,10 @@ def getParWords(tag, y, x=0, attr=REGULAR, link = ""):
         elif c.name in (u'i', u'em'):
             new_words, x, y = getParWords(c, y, x, ITALIC, link)
         elif c.name == u'a':
-            link = c['href']
-            if link[:6] == "/wiki/":
-                link = "http://en.wikipedia.org" + link
-            new_words, x, y = getParWords(c, y, x, attr, link)
+            hl = c['href']
+            if hl[:6] == "/wiki/":
+                hl = "http://en.wikipedia.org" + hl
+            new_words, x, y = getParWords(c, y, x, attr, hl)
         elif c.name == u'Q': # TODO: add in ul, li
             new_words, x, y = getParWords(c, y, x)
         words.extend(new_words)
@@ -207,7 +207,7 @@ class Word(MySprite):
 
     def __init__(self, text, pos, attr=REGULAR, size = 0, link=""):
         fontCheck(attr)
-        self.ff = 0.9
+        self.ff = FRICTION_FACTOR
         self.text = text
         self.hyperlink = link
         if link == "": color = BLACK

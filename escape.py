@@ -32,6 +32,7 @@ UP_KEYS = (K_UP, K_w)
 DOWN_KEYS = (K_DOWN, K_s)
 QUIT_KEYS = (K_ESCAPE, )
 
+FPS = 60
 TIME_FACTOR = 1000.0   # Helps rabbyt read pygame ticks
 
 
@@ -59,6 +60,7 @@ def runGame():
     """Initialize new game."""
     camx = 0
     camy = 0
+    fpsclock = pygame.time.Clock()
 
     page = Page("http://en.wikipedia.org/wiki/Solariellidae")
     player = Player(PLAYER_START)
@@ -74,11 +76,11 @@ def runGame():
                 if event.key in QUIT_KEYS:
                     terminate()
                 elif event.key in LEFT_KEYS:
-                    player.goingLeft = True
-                    player.goingRight = False
+                    player.goingleft = True
+                    player.goingright = False
                 elif event.key in RIGHT_KEYS:
-                    player.goingRight = True
-                    player.goingLeft = False
+                    player.goingright = True
+                    player.goingleft = False
                 elif event.key in UP_KEYS:
                     player.jump()
                 elif event.key in DOWN_KEYS and player.plat is not None:
@@ -89,9 +91,9 @@ def runGame():
                         player.xy = PLAYER_START
             elif event.type == KEYUP:
                 if event.key in LEFT_KEYS:
-                    player.goingLeft = False
+                    player.goingleft = False
                 elif event.key in RIGHT_KEYS:
-                    player.goingRight = False
+                    player.goingright = False
                 elif event.key in UP_KEYS:
                     player.jumpStop()
 
@@ -108,6 +110,7 @@ def runGame():
             and player.velocity[1] < 0):
                 player.bottom = plat.top + 1
                 player.plat = plat
+                player.velocity[1] = 0   # Stop falling
             elif (2 * player.right / 3 + player.left / 3 < plat.left
             and player.velocity[0] > 0):
                 player.right = plat.left - 1
@@ -118,7 +121,7 @@ def runGame():
             and player.velocity[1] > 0):
                 player.top = plat.bottom - 1
 
-        # adjust camerax and cameray if beyond the "camera slack"
+        # adjust camera if beyond the "camera slack"
         # TODO: Reimplement using Anims
         if camx - player.x > CAMERASLACK:
             utils.scroll(player.x + CAMERASLACK - camx, 0)
@@ -133,14 +136,15 @@ def runGame():
             utils.scroll(0, player.y - CAMERASLACK - camy)
             camy = player.y - CAMERASLACK
 
-        # Draw screen
-        rabbyt.clear(WHITE)
+        # Slow to FPS
+        fpsclock.tick(FPS)
         # Need to tell Rabbyt what time it is every frame
         rabbyt.set_time(pygame.time.get_ticks() / TIME_FACTOR)
 
+        # Draw screen
+        rabbyt.clear(WHITE)
         rabbyt.render_unsorted(page.words)
         player.render()
-
         pygame.display.flip()
 
 
