@@ -83,9 +83,6 @@ class Jumper(MySprite):
             self.plat = None
             self.velocity[1] += self.jumpSpeed
 
-    def jumpStop(self):
-        pass
-
 
 class Player(Jumper):
     def __init__(self, pos):

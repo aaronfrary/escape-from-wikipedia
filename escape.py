@@ -94,8 +94,8 @@ def runGame():
                     player.goingleft = False
                 elif event.key in RIGHT_KEYS:
                     player.goingright = False
-                elif event.key in UP_KEYS:
-                    player.jumpStop()
+                elif event.key in UP_KEYS and player.velocity[1] > 0:
+                    player.velocity[1] *= 0.5   # Control jump height
 
         # Update positions
         player.update()
@@ -103,23 +103,22 @@ def runGame():
         # Check for player-platform collisions
         collisions = rabbyt.collisions.aabb_collide_single(player, page.words)
         # Player forced out of platforms by most direct route, more or less;
-        # by checking platform top first, player gains "stair climbing"
-        # ability for stairs up to 1/3 player height.
         for plat in collisions:
-            if (player.top > plat.top
-            and player.velocity[1] < -abs(player.velocity[0])):
-                player.bottom = plat.top + 1
-                player.plat = plat
-                player.velocity[1] = 0   # Stop falling
-            elif (2 * player.right / 3 + player.left / 3 < plat.left
+            if (2 * player.right / 3 + player.left / 3 < plat.left
             and player.velocity[0] > 0):
                 player.right = plat.left - 1
             elif (2 * player.left / 3 + player.right / 3 > plat.right
             and player.velocity[0] < 0):
                 player.left = plat.right + 1
+            # More sensitive about the top, to compensate for high fall veloc
+            elif player.top > plat.top and player.velocity[1] < 0:
+                player.bottom = plat.top + 1
+                player.plat = plat
+                player.velocity[1] = 0   # Stop falling
             elif (2 * player.top / 3 + player.bottom / 3 < plat.bottom
             and player.velocity[1] > 0):
                 player.top = plat.bottom - 1
+                player.velocity[1] = 0   # Jump stops
 
         # adjust camera if beyond the "camera slack"
         # TODO: Reimplement using Anims
