@@ -22,7 +22,7 @@ from constants import *
 #import lxml
 
 TEXT_CROPX = -2
-TEXT_CROPY = -4
+TEXT_CROPY = -3
 
 HTML404 = """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <HTML><HEAD><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">

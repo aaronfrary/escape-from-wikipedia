@@ -32,8 +32,9 @@ PLAYER_SCALE = 0.6
 CAMERASLACK = 80        # How far from the center the player moves before
                         # moving the camera.
 G_ACCEL = -0.4          # General strength of gravity.
-BASE_SPEED = 1.7        # Horizontal acceleration rate for average creature.
-BASE_JUMPSPEED = 9.5    # Vertical speed (not accel) of average creature's jump.
+BASE_SPEED = 1.8        # Horizontal acceleration rate for average creature.
+BASE_JUMPSPEED = 9.2    # Vertical speed (not accel) of average creature's jump.
+MAX_VELOCITY = 12
 FRICTION_FACTOR = 0.85  # Default friction for words (higher is more slippery).
 
 BLACK    = (  0,   0,   0)

@@ -106,8 +106,8 @@ def runGame():
         # by checking platform top first, player gains "stair climbing"
         # ability for stairs up to 1/3 player height.
         for plat in collisions:
-            if (2 * player.bottom / 3 + player.top / 3 > plat.top
-            and player.velocity[1] < 0):
+            if (player.top > plat.top
+            and player.velocity[1] < -abs(player.velocity[0])):
                 player.bottom = plat.top + 1
                 player.plat = plat
                 player.velocity[1] = 0   # Stop falling

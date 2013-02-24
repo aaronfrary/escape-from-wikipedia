@@ -65,9 +65,13 @@ class Jumper(MySprite):
         self.velocity[0] += a[0]
         self.velocity[1] += a[1]
 
+        if abs(self.velocity[0]) > MAX_VELOCITY:
+            self.velocity[0] = math.copysign(MAX_VELOCITY, self.velocity[0])
+        if abs(self.velocity[1]) > MAX_VELOCITY:
+            self.velocity[1] = math.copysign(MAX_VELOCITY, self.velocity[1])
+
         self.x += self.velocity[0]
         self.y += self.velocity[1]
-        print self.velocity
         
         # Detect walk off platform
         if self.plat is not None:
