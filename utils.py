@@ -16,7 +16,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 # Some helper functions, and wrappers into OpenGL
 
-import pygame
+import pygame, math
 from OpenGL.GL import *
 from OpenGL.GLU import *
 

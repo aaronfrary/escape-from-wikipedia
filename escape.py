@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import sys, random, pygame, rabbyt
+import sys, pygame, rabbyt
 from pygame.locals import *
 from constants import *
 import utils
@@ -63,6 +63,8 @@ def runGame():
     fpsclock = pygame.time.Clock()
 
     page = Page("http://en.wikipedia.org/wiki/Solariellidae")
+    # Longest page in Wikipedia
+    #page = Page("http://en.wikipedia.org/wiki/Character_mask")
     player = Player(PLAYER_START)
     print len(page.words)
 
@@ -88,7 +90,7 @@ def runGame():
                     if not player.plat.hyperlink == "":
                         page = Page(player.plat.hyperlink)
                         print len(page.words)
-                        player.xy = PLAYER_START
+                        player.reset()
             elif event.type == KEYUP:
                 if event.key in LEFT_KEYS:
                     player.goingleft = False

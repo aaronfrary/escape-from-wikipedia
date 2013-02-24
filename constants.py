@@ -24,9 +24,10 @@ HALF_WINHEIGHT = int(WINHEIGHT / 2)
 PAGEWIDTH = 4 * WINWIDTH
 HSPACE = 44
 VSPACE = 60
-PARSPACE = 160
+PARSPACE = 140
+INDENT = 60
 
-PLAYER_START = (10,200)
+PLAYER_START = (100, 200)
 PLAYER_SCALE = 0.6
 
 CAMERASLACK = 80        # How far from the center the player moves before
@@ -34,7 +35,7 @@ CAMERASLACK = 80        # How far from the center the player moves before
 G_ACCEL = -0.4          # General strength of gravity.
 BASE_SPEED = 1.8        # Horizontal acceleration rate for average creature.
 BASE_JUMPSPEED = 9.2    # Vertical speed (not accel) of average creature's jump.
-MAX_VELOCITY = 12
+MAX_VELOCITY = 12.0
 FRICTION_FACTOR = 0.85  # Default friction for words (higher is more slippery).
 
 BLACK    = (  0,   0,   0)
@@ -52,5 +53,5 @@ BOLDITAL = 3
 
 SMALL_FONT_SIZE = 36
 MEDIUM_FONT_SIZE = 48
-LARGE_FONT_SIZE = 96
+LARGE_FONT_SIZE = 92
 

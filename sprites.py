@@ -90,3 +90,9 @@ class Player(Jumper):
         self.scale = PLAYER_SCALE
         self.xy = pos
 
+    def reset(self):
+        self.xy = PLAYER_START
+        self.velocity = [0.0, 0.0]
+        self.plat = None
+
+

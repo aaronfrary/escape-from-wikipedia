@@ -24,41 +24,9 @@ from constants import *
 TEXT_CROPX = -2
 TEXT_CROPY = -3
 
-HTML404 = """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<HTML><HEAD><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
-<TITLE>ERROR: The requested URL could not be retrieved</TITLE>
-<STYLE type="text/css"><!--BODY{background-color:#ffffff;font-family:verdana,sans-serif}PRE{font-family:sans-serif}--></STYLE>
-</HEAD><BODY>
-<H1>ERROR</H1>
-<H2>The requested URL could not be retrieved</H2>
-<HR noshade size="1px">
-<P>
-While trying to retrieve the URL:
-    <A HREF="{0}">{0}</A>
-    <P>
-    The following error was encountered:
-    <UL>
-    <LI>
-    <STRONG>
-    Connection to  Failed
-    </STRONG>
-    </UL>
+BULLET = 0x2022   # Unicode character
 
-    <P>
-    The system returned:
-    <PRE><I>    (101) Network is unreachable</I></PRE>
-
-    <P>
-    The remote host or network may be down.  Please try the request again.
-    <P>Your cache administrator is DEAD. 
-
-    <BR clear="all">
-    <HR noshade size="1px">
-    <ADDRESS>
-    Generated Mon, 18 Feb 2013 16:42:15 GMT by 43379 (squid/2.7.STABLE6)
-    </ADDRESS>
-    </BODY></HTML>
-"""
+HTML404 = """<HTML><HEAD><TITLE>ERROR: The requested URL could not be retrieved</TITLE> </HEAD> <BODY><H2>ERROR</H2> <H2>The requested URL could not be retrieved</H2> <P>While trying to retrieve the URL:<A HREF="{0}">{0}</A> </P> <P>The following error was encountered: <STRONG>Connection to Wikipedia Failed</STRONG> </P> <P>The system returned: <I>(101) Network is unreachable</I> </P> <P>The remote host or network may be down.  Please try the request again.</P> <P>Your cache administrator is DEAD.</P> </BODY> </HTML>"""
 
 def fontCheck(attr):
     if Word.WIKIFONT[attr] == None:
@@ -111,25 +79,32 @@ def getWords(html_doc):
     # Get rid of tags that won't be used
     pattern = re.compile('<table.*?</table>', re.DOTALL)
     html_doc = pattern.sub('', html_doc)
+    pattern = re.compile('<sup.*?</sup>', re.DOTALL)
+    html_doc = pattern.sub('', html_doc)
     # Preformat so we don't get floating punctuation, etc.
-    pattern = re.compile('(</\S+>)(\S+)')
-    html_doc = pattern.sub(lambda m: m.group(2) + m.group(1), html_doc)
-    # Parse
+    repl = lambda m: m.group(2) + m.group(1)
+    pattern = re.compile('([[(]+)(<\S+>)')
+    html_doc = pattern.sub(repl, html_doc)
+    pattern = re.compile('(</\S+>)([.,;)\]]+)')
+    html_doc = pattern.sub(repl, html_doc)
+
     soup = bs4.BeautifulSoup(html_doc, from_encoding="utf-8")
     #soup = bs4.BeautifulSoup(html_doc, "lxml", from_encoding="utf-8")
     y = 0
     # Start by getting title
     words, _, _ = strToWords(getStr(soup.title), y, size=2)
     # Find relevant text-containing elements
-    for tag in soup.body.find_all(['h2', 'dt', 'p']):
+    for tag in soup.body.find_all(['h2', 'dt', 'p', 'ul']):
         new_words = []
         y = words[-1].bottom - PARSPACE
         if tag.name == u'h2':
             new_words, _, _ = strToWords(getStr(tag), y, size=1)
         elif tag.name == u'dt':
-            new_words, _, _ = strToWords(getStr(tag), y, attr=BOLD, size=1)
+            new_words, _, _ = strToWords(getStr(tag), y + PARSPACE / 2, attr=BOLD)
         elif tag.name == u'p':
             new_words, _, _ = getParWords(tag, y)
+        elif tag.name == u'ul':
+            new_words, _, _ = getParWords(tag, y + PARSPACE)
         words.extend(new_words)
         if tag.name == u'h2' and words[-1].text == u'References':
             break # That's as far down as we go
@@ -164,16 +139,21 @@ def getParWords(tag, y, x=0, attr=REGULAR, link = ""):
             hl = c['href']
             if hl[:6] == "/wiki/":
                 hl = "http://en.wikipedia.org" + hl
+            else:
+                hl = link
             new_words, x, y = getParWords(c, y, x, attr, hl)
-        elif c.name == u'Q': # TODO: add in ul, li
-            new_words, x, y = getParWords(c, y, x)
+        elif c.name == u'li':
+            c.insert(0, unichr(BULLET))
+            new_words, x, y = getParWords(c, y - 1.5 * VSPACE, INDENT, attr, link)
         words.extend(new_words)
     return (words, x, y)
 
 def strToWords(s, y, x=0, attr=REGULAR, size=0, link=""):
     """Return string of words as `Word's, with correct locations."""
+    if s is None:
+        return []
     words = []
-    for word in s.replace('\n', '').split():
+    for word in s.split():
         w = Word(word, (x, y), attr, size, link)
         if w.right >= PAGEWIDTH:
             w.left = 0
