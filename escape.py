@@ -62,9 +62,12 @@ def runGame():
     camy = 0
     fpsclock = pygame.time.Clock()
 
+    # Short, simple page
     page = Page("http://en.wikipedia.org/wiki/Solariellidae")
     # Longest page in Wikipedia
     #page = Page("http://en.wikipedia.org/wiki/Character_mask")
+    # Random page
+    #page = Page("http://en.wikipedia.org/wiki/Special:Random")
     player = Player(PLAYER_START)
     print len(page.words)
 

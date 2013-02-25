@@ -83,7 +83,7 @@ def getWords(html_doc):
     html_doc = pattern.sub('', html_doc)
     # Preformat so we don't get floating punctuation, etc.
     repl = lambda m: m.group(2) + m.group(1)
-    pattern = re.compile('([[(]+)(<\S+>)')
+    pattern = re.compile('([[(]+)(<.+?>)', re.DOTALL)
     html_doc = pattern.sub(repl, html_doc)
     pattern = re.compile('(</\S+>)([.,;)\]]+)')
     html_doc = pattern.sub(repl, html_doc)
@@ -132,9 +132,15 @@ def getParWords(tag, y, x=0, attr=REGULAR, link = ""):
             new_words, x, y = strToWords(unicode(c), y, x=x,
                     attr=attr, link=link)
         elif c.name in (u'b', u'strong'):
-            new_words, x, y = getParWords(c, y, x, BOLD, link)
+            new_attr = BOLD
+            if attr == ITALIC:
+                new_attr = BOLDITAL
+            new_words, x, y = getParWords(c, y, x, new_attr, link)
         elif c.name in (u'i', u'em'):
-            new_words, x, y = getParWords(c, y, x, ITALIC, link)
+            new_attr = ITALIC
+            if attr == BOLD:
+                new_attr = BOLDITAL
+            new_words, x, y = getParWords(c, y, x, new_attr, link)
         elif c.name == u'a':
             hl = c['href']
             if hl[:6] == "/wiki/":
@@ -144,7 +150,10 @@ def getParWords(tag, y, x=0, attr=REGULAR, link = ""):
             new_words, x, y = getParWords(c, y, x, attr, hl)
         elif c.name == u'li':
             c.insert(0, unichr(BULLET))
-            new_words, x, y = getParWords(c, y - 1.5 * VSPACE, INDENT, attr, link)
+            new_words, x, y = getParWords(c, y - 1.5 * VSPACE, INDENT,
+                                          attr, link)
+        elif c.name in (u'span', u'div'):
+            new_words, x, y = getParWords(c, y, x, attr, link)
         words.extend(new_words)
     return (words, x, y)
 
@@ -210,7 +219,10 @@ class Word(MySprite):
 class Page:
     def __init__(self, url):
         self.url = url
-        self.words = getWords(getHTML(url))
+        try:
+            self.words = getWords(getHTML(url))
+        finally:
+            print url
 
 
 
