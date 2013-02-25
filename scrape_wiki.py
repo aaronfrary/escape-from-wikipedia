@@ -160,7 +160,7 @@ def getParWords(tag, y, x=0, attr=REGULAR, link = ""):
 def strToWords(s, y, x=0, attr=REGULAR, size=0, link=""):
     """Return string of words as `Word's, with correct locations."""
     if s is None:
-        return []
+        return ([], x, y)
     words = []
     for word in s.split():
         w = Word(word, (x, y), attr, size, link)
@@ -219,10 +219,5 @@ class Word(MySprite):
 class Page:
     def __init__(self, url):
         self.url = url
-        try:
-            self.words = getWords(getHTML(url))
-        finally:
-            print url
-
-
+        self.words = getWords(getHTML(url))
 

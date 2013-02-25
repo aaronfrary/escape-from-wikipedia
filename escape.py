@@ -32,7 +32,7 @@ UP_KEYS = (K_UP, K_w)
 DOWN_KEYS = (K_DOWN, K_s)
 QUIT_KEYS = (K_ESCAPE, )
 
-FPS = 60
+FPS = 30
 TIME_FACTOR = 1000.0   # Helps rabbyt read pygame ticks
 
 
@@ -63,11 +63,11 @@ def runGame():
     fpsclock = pygame.time.Clock()
 
     # Short, simple page
-    page = Page("http://en.wikipedia.org/wiki/Solariellidae")
+    #page = Page("http://en.wikipedia.org/wiki/Solariellidae")
     # Longest page in Wikipedia
     #page = Page("http://en.wikipedia.org/wiki/Character_mask")
     # Random page
-    #page = Page("http://en.wikipedia.org/wiki/Special:Random")
+    page = Page("http://en.wikipedia.org/wiki/Special:Random")
     player = Player(PLAYER_START)
     print len(page.words)
 
@@ -109,10 +109,10 @@ def runGame():
         collisions = rabbyt.collisions.aabb_collide_single(player, page.words)
         # Player forced out of platforms by most direct route, more or less;
         for plat in collisions:
-            if (2 * player.right / 3 + player.left / 3 < plat.left
+            if (player.right / 3 + 2 * player.left / 3 < plat.left
             and player.velocity[0] > 0):
                 player.right = plat.left - 1
-            elif (2 * player.left / 3 + player.right / 3 > plat.right
+            elif (player.left / 3 + 2 * player.right / 3 > plat.right
             and player.velocity[0] < 0):
                 player.left = plat.right + 1
             # More sensitive about the top, to compensate for high fall veloc
