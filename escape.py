@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import sys, pygame, rabbyt
+import sys, os, pygame, rabbyt
 from pygame.locals import *
 from constants import *
 import utils
@@ -50,7 +50,8 @@ def main():
     # (0,0) is center point of screen
     rabbyt.set_viewport( (WINWIDTH, WINHEIGHT) )
     rabbyt.set_default_attribs()
-    pygame.display.set_icon(pygame.image.load("images\\gameicon.png").convert_alpha())
+    pygame.display.set_icon(pygame.image.load(os.path.join('images',
+        'gameicon.png')).convert_alpha())
     pygame.display.set_caption('Escape from Wikipedia')
 
     while True:
@@ -68,7 +69,7 @@ def runGame():
     # Random page
     page = Page("http://en.wikipedia.org/wiki/Special:Random")
     player = Player(PLAYER_START)
-    print len(page.words)
+    #print len(page.words)
 
     # Main loop
     while True:
@@ -96,7 +97,7 @@ def runGame():
                     # Enter hyperlink
                     if not player.plat.hyperlink == "":
                         page = Page(player.plat.hyperlink)
-                        print len(page.words)
+                        #print len(page.words)
                         player.reset()
             elif event.type == KEYUP:
                 if event.key in LEFT_KEYS:

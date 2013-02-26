@@ -18,7 +18,6 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import pygame, math
 from OpenGL.GL import *
-from OpenGL.GLU import *
 
 def unitVec(start, end):
     """Helper function, return unit vector between two points."""

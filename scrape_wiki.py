@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import urllib2, StringIO, gzip, zlib, bs4, re, pygame
+import urllib2, StringIO, gzip, zlib, bs4, re, pygame, os
 import utils
 from sprites import MySprite
 from constants import *
@@ -34,32 +34,32 @@ HTML404 = """<HTML><HEAD><TITLE>ERROR: The requested URL could not be retrieved<
 def fontCheck(attr):
     if Word.WIKIFONT[attr] == None:
         if attr == REGULAR:
-            Word.WIKI_REGULAR = [pygame.font.Font("fonts\\arial.ttf",
+            Word.WIKI_REGULAR = [pygame.font.Font(os.path.join('fonts', 'arial.ttf'),
                                                   SMALL_FONT_SIZE),
-                                 pygame.font.Font("fonts\\arial.ttf",
+                                 pygame.font.Font(os.path.join('fonts', 'arial.ttf'),
                                                   MEDIUM_FONT_SIZE),
-                                 pygame.font.Font("fonts\\arial.ttf",
+                                 pygame.font.Font(os.path.join('fonts', 'arial.ttf'),
                                                   LARGE_FONT_SIZE)]
         elif attr == BOLD:
-            Word.WIKI_BOLD = [pygame.font.Font("fonts\\arialbd.ttf",
+            Word.WIKI_BOLD = [pygame.font.Font(os.path.join('fonts', 'arialbd.ttf'),
                                                SMALL_FONT_SIZE),
-                              pygame.font.Font("fonts\\arialbd.ttf",
+                              pygame.font.Font(os.path.join('fonts', 'arialbd.ttf'),
                                                MEDIUM_FONT_SIZE),
-                              pygame.font.Font("fonts\\arialbd.ttf",
+                              pygame.font.Font(os.path.join('fonts', 'arialbd.ttf'),
                                                LARGE_FONT_SIZE)]
         elif attr == ITALIC:
-            Word.WIKI_ITALIC = [pygame.font.Font("fonts\\ariali.ttf",
+            Word.WIKI_ITALIC = [pygame.font.Font(os.path.join('fonts', 'ariali.ttf'),
                                                  SMALL_FONT_SIZE),
-                                pygame.font.Font("fonts\\ariali.ttf",
+                                pygame.font.Font(os.path.join('fonts', 'ariali.ttf'),
                                                  MEDIUM_FONT_SIZE),
-                                pygame.font.Font("fonts\\ariali.ttf",
+                                pygame.font.Font(os.path.join('fonts', 'ariali.ttf'),
                                                  LARGE_FONT_SIZE)]
         elif attr == BOLDITAL:
-            Word.WIKI_BOLDITAL = [pygame.font.Font("fonts\\arialbi.ttf",
+            Word.WIKI_BOLDITAL = [pygame.font.Font(os.path.join('fonts', 'arialbi.ttf'),
                                                    SMALL_FONT_SIZE),
-                                  pygame.font.Font("fonts\\arialbi.ttf",
+                                  pygame.font.Font(os.path.join('fonts', 'arialbi.ttf'),
                                                    MEDIUM_FONT_SIZE),
-                                  pygame.font.Font("fonts\\arialbi.ttf",
+                                  pygame.font.Font(os.path.join('fonts', 'arialbi.ttf'),
                                                    LARGE_FONT_SIZE)]
         Word.WIKIFONT = {REGULAR : Word.WIKI_REGULAR,
                          BOLD : Word.WIKI_BOLD,

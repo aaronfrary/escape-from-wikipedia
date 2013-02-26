@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import math, pygame, rabbyt, random
+import math, pygame, rabbyt, random, os
 import utils
 from constants import *
 
@@ -92,12 +92,12 @@ class Jumper(MySprite):
 
 class Player(Jumper):
     def __init__(self, pos):
-        Jumper.__init__(self, texture="images\\player.png")
+        Jumper.__init__(self, texture=os.path.join('images', 'player.png'))
         self.scale = PLAYER_SCALE
         self.xy = pos
         self.max_jumps = NUMBER_JUMPS
-        self.shadow = MySprite("images\\shadow"
-                + str(random.randrange(1,6)) + ".png")
+        self.shadow = MySprite(os.path.join('images',
+            'shadow' + str(random.randrange(1,6)) + ".png"))
         self.shadow.scale = PLAYER_SCALE
         self.alpha = 222
 
