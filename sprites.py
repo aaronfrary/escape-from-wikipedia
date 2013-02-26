@@ -15,7 +15,7 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import math, pygame, rabbyt
+import math, pygame, rabbyt, random
 import utils
 from constants import *
 
@@ -94,7 +94,8 @@ class Player(Jumper):
         self.scale = PLAYER_SCALE
         self.xy = pos
         self.max_jumps = NUMBER_JUMPS
-        self.shadow = MySprite("images\\shadow.png")
+        self.shadow = MySprite("images\\shadow"
+                + str(random.randrange(1,6)) + ".png")
         self.shadow.scale = PLAYER_SCALE
         self.alpha = 222
 

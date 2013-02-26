@@ -26,6 +26,9 @@ TEXT_CROPY = -2
 
 BULLET = 0x2022   # Unicode character
 
+# Zero-width space character causes problems
+ZERO_WIDTH = re.compile(u'\ufeff')
+
 HTML404 = """<HTML><HEAD><TITLE>ERROR: The requested URL could not be retrieved</TITLE> </HEAD> <BODY><H2>ERROR</H2> <H2>The requested URL could not be retrieved</H2> <P>While trying to retrieve the URL:<A HREF="{0}">{0}</A> </P> <P>The following error was encountered: <STRONG>Connection to Wikipedia Failed</STRONG> </P> <P>The system returned: <I>(101) Network is unreachable</I> </P> <P>The remote host or network may be down.  Please try the request again.</P> <P>Your cache administrator is DEAD.</P> </BODY> </HTML>"""
 
 def fontCheck(attr):
@@ -95,9 +98,6 @@ def getWords(html_doc):
     pattern = re.compile('<table.*?</table>', re.DOTALL)
     html_doc = pattern.sub('', html_doc)
     pattern = re.compile('<sup.*?</sup>', re.DOTALL)
-    html_doc = pattern.sub('', html_doc)
-    # Zero-width space character causes problems, so ditch it
-    pattern = re.compile(unichr(0xfeff))
     html_doc = pattern.sub('', html_doc)
     # Preformat so we don't get floating punctuation, etc.
     repl = lambda m: m.group(2) + m.group(1)
@@ -182,6 +182,7 @@ def strToWords(s, y, x=0, attr=REGULAR, size=0, link=""):
     """Return string of words as `Word's, with correct locations."""
     if s is None:
         return ([], x, y)
+    s = ZERO_WIDTH.sub('', s)   # Get rid of zero-width character
     words = []
     for word in s.split():
         if len(word) < 1:
