@@ -15,14 +15,14 @@ You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import urllib2, bs4, re, pygame
+import urllib2, StringIO, gzip, zlib, bs4, re, pygame
 import utils
 from sprites import MySprite
 from constants import *
 #import lxml
 
 TEXT_CROPX = -2
-TEXT_CROPY = -3
+TEXT_CROPY = -2
 
 BULLET = 0x2022   # Unicode character
 
@@ -63,14 +63,29 @@ def fontCheck(attr):
                          ITALIC : Word.WIKI_ITALIC,
                          BOLDITAL : Word.WIKI_BOLDITAL}
 
+def decode(page):
+    """Some Wikipedia pages are fetched compressed. This undoes that."""
+    encoding = page.info().get("Content-Encoding")
+    if encoding in ('gzip', 'x-gzip', 'deflate'):
+        content = page.read()
+        if encoding == 'deflate':
+            data = StringIO.StringIO(zlib.decompress(content))
+        else:
+            data = gzip.GzipFile('', 'rb', 9, StringIO.StringIO(content))
+        page = data.read()
+    return page
+
 def getHTML(addr):
     """Return html for webpage 'addr', or error page on failed connection."""
     try:
-        req = urllib2.Request(addr, headers={"User-Agent" : "Magic Browser"})
-        f = urllib2.urlopen( req )
-        s = f.read()
-        f.close()
-        return s
+        opener = urllib2.build_opener()
+        opener.addheaders = [('User-Agent', 'Magic Browser'),
+                ('Accept-Encoding', 'gzip,deflate')]
+        usock = opener.open(addr)
+        url = usock.geturl()
+        html_doc = decode(usock)
+        usock.close()
+        return html_doc
     except urllib2.URLError:
         return HTML404.format(addr)
 
@@ -81,11 +96,14 @@ def getWords(html_doc):
     html_doc = pattern.sub('', html_doc)
     pattern = re.compile('<sup.*?</sup>', re.DOTALL)
     html_doc = pattern.sub('', html_doc)
+    # Zero-width space character causes problems, so ditch it
+    pattern = re.compile(unichr(0xfeff))
+    html_doc = pattern.sub('', html_doc)
     # Preformat so we don't get floating punctuation, etc.
     repl = lambda m: m.group(2) + m.group(1)
-    pattern = re.compile('([[(]+)(<.+?>)', re.DOTALL)
+    pattern = re.compile('([[("]+)(<.+?>)', re.DOTALL)
     html_doc = pattern.sub(repl, html_doc)
-    pattern = re.compile('(</\S+>)([.,;)\]]+)')
+    pattern = re.compile('(</\S+>)([.,;")\]]+)')
     html_doc = pattern.sub(repl, html_doc)
 
     soup = bs4.BeautifulSoup(html_doc, from_encoding="utf-8")
@@ -117,10 +135,11 @@ def getStr(tag):
             if not c.isspace():   # <span> tags are the worst.
                 return unicode(c)
         # ignore 'edit' link
-        elif c.name in (u'span', u'div') and not c['class'] == [u'editsection']:
-            end = getStr(c)
-            if end is not None:
-                return end
+        elif c.name in (u'span', u'div') and not (c.has_key('class')
+        and c['class'] == [u'editsection']):
+                end = getStr(c)
+                if end is not None:
+                    return end
     return None
 
 def getParWords(tag, y, x=0, attr=REGULAR, link = ""):
@@ -142,7 +161,9 @@ def getParWords(tag, y, x=0, attr=REGULAR, link = ""):
                 new_attr = BOLDITAL
             new_words, x, y = getParWords(c, y, x, new_attr, link)
         elif c.name == u'a':
-            hl = c['href']
+            hl = link
+            if c.has_key('href'):
+                hl = c['href']
             if hl[:6] == "/wiki/":
                 hl = "http://en.wikipedia.org" + hl
             else:
@@ -163,6 +184,8 @@ def strToWords(s, y, x=0, attr=REGULAR, size=0, link=""):
         return ([], x, y)
     words = []
     for word in s.split():
+        if len(word) < 1:
+            continue
         w = Word(word, (x, y), attr, size, link)
         if w.right >= PAGEWIDTH:
             w.left = 0
@@ -196,11 +219,14 @@ class Word(MySprite):
 
     def __init__(self, text, pos, attr=REGULAR, size = 0, link=""):
         fontCheck(attr)
-        self.ff = FRICTION_FACTOR
         self.text = text
         self.hyperlink = link
-        if link == "": color = BLACK
-        else: color = BLUE
+        if link == "":
+            color = BLACK
+            self.ff = FRICTION_FACTOR
+        else:
+            color = BLUE
+            self.ff = 0.9
         image = Word.WIKIFONT[attr][size].render(text, True, color)
         rect = image.get_rect()
         cropped_image = image.subsurface(rect.inflate(TEXT_CROPX * (size + 1),

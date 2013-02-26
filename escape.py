@@ -31,6 +31,7 @@ RIGHT_KEYS = (K_RIGHT, K_d)
 UP_KEYS = (K_UP, K_w)
 DOWN_KEYS = (K_DOWN, K_s)
 QUIT_KEYS = (K_ESCAPE, )
+RESTART_KEYS = (K_r, )
 
 FPS = 30
 TIME_FACTOR = 1000.0   # Helps rabbyt read pygame ticks
@@ -60,8 +61,8 @@ def runGame():
     """Initialize new game."""
     camx = 0
     camy = 0
+    up_key_is_down = False
     fpsclock = pygame.time.Clock()
-
     # Short, simple page
     #page = Page("http://en.wikipedia.org/wiki/Solariellidae")
     # Longest page in Wikipedia
@@ -80,13 +81,19 @@ def runGame():
             elif event.type == KEYDOWN:
                 if event.key in QUIT_KEYS:
                     terminate()
+                elif event.key in RESTART_KEYS:
+                    utils.scroll(-camx, -camy) # Reset glMatrix
+                    return
                 elif event.key in LEFT_KEYS:
                     player.goingleft = True
                     player.goingright = False
+                    player.tex_shape = (0, 1, 1, 0)
                 elif event.key in RIGHT_KEYS:
                     player.goingright = True
                     player.goingleft = False
-                elif event.key in UP_KEYS:
+                    player.tex_shape = (1, 1, 0, 0)
+                elif event.key in UP_KEYS and not up_key_is_down:
+                    up_key_is_down = True
                     player.jump()
                 elif event.key in DOWN_KEYS and player.plat is not None:
                     # Enter hyperlink
@@ -99,8 +106,10 @@ def runGame():
                     player.goingleft = False
                 elif event.key in RIGHT_KEYS:
                     player.goingright = False
-                elif event.key in UP_KEYS and player.velocity[1] > 0:
-                    player.velocity[1] *= 0.5   # Control jump height
+                elif event.key in UP_KEYS:
+                    up_key_is_down = False
+                    if player.velocity[1] > 0:
+                        player.velocity[1] *= 0.5   # Control jump height
 
         # Update positions
         player.update()
@@ -120,6 +129,7 @@ def runGame():
                 player.bottom = plat.top + 1
                 player.plat = plat
                 player.velocity[1] = 0   # Stop falling
+                player.jumps = 0         # Reset jumps
             elif (2 * player.top / 3 + player.bottom / 3 < plat.bottom
             and player.velocity[1] > 0):
                 player.top = plat.bottom - 1

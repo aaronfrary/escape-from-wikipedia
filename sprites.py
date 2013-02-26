@@ -38,6 +38,8 @@ class Jumper(MySprite):
         self.gaccel = grav * G_ACCEL
         self.jumpSpeed = jumpSpeed * BASE_JUMPSPEED
         self.plat = None
+        self.jumps = 1
+        self.max_jumps = 1
         self.speed = speed * BASE_SPEED
         self.goingleft = False
         self.goingright = False
@@ -48,7 +50,7 @@ class Jumper(MySprite):
         a = [0.0, 0.0]   # Acceleration.
 
         if self.plat is None:
-            ff = 1   # No friction.
+            ff = 0.98   # Almost no friction.
             a[1] = self.gaccel
         else:
             ff = self.plat.ff   # Friction factor of surface
@@ -77,10 +79,12 @@ class Jumper(MySprite):
         if self.plat is not None:
             if self.left > self.plat.right or self.right < self.plat.left:
                 self.plat = None
+                self.jumps += 1
 
     def jump(self):
-        if self.plat is not None:
+        if self.jumps < self.max_jumps:
             self.plat = None
+            self.jumps += 1
             self.velocity[1] += self.jumpSpeed
 
 
@@ -89,6 +93,7 @@ class Player(Jumper):
         Jumper.__init__(self, texture="images\\player.png")
         self.scale = PLAYER_SCALE
         self.xy = pos
+        self.max_jumps = NUMBER_JUMPS
 
     def reset(self):
         self.xy = PLAYER_START
