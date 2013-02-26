@@ -1,8 +1,15 @@
 Escape from Wikipedia
-Aaron Graham-Horowitz
+Copyright 2013 Aaron Graham-Horowitz
 
-I had this silly idea for a platformer style game where you run around the
-inside of a Wikipedia page, jumping from word to word and following hyperlinks.
+Escape from Wikipedia v1.0 is the precursor to what I hope will soon be a game.  Right now, it is simply a set of interesting mechanics, that I hope you will enjoy playing around with.  If you have feedback about the game, you can send email to aarongrahamhorowitz(at)college.harvard.edu.  I would love to hear what you think, and any ideas you have for directions to take the game or ways to make it more enjoyable.
 
-Right now I'm just trying to put together a proof-of-concept using pygame and
-rabbyt. We'll see how it turns out.
+To play, simply run the executable (if on Windows). If you're not on Windows, you'll have to wait until I finish figuring out all this distribution stuff.  You will take on the role of a neat-o stick figure with a colorful afterimage and the power to double-jump and travel through hyperlinks on Wikipedia!  That's all!
+
+CONTROLS:
+    > Move left................'a' or left-arrow
+    > Move right...............'d' or right-arrow
+    > Jump.....................'w' or up-arrow (hold key to jump higher)
+    > Follow hyperlink.........'s' or down-arrow (must be standing on blue word)
+
+Enjoy!
+        --AGH

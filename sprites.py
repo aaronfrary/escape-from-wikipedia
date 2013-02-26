@@ -85,6 +85,8 @@ class Jumper(MySprite):
         if self.jumps < self.max_jumps:
             self.plat = None
             self.jumps += 1
+            if self.velocity[1] < 0:
+                self.velocity[1] *= 0.5   # Better fall-catching
             self.velocity[1] += self.jumpSpeed
 
 

@@ -50,7 +50,7 @@ def main():
     # (0,0) is center point of screen
     rabbyt.set_viewport( (WINWIDTH, WINHEIGHT) )
     rabbyt.set_default_attribs()
-    #pygame.display.set_icon(pygame.image.load("images.gameicon.png"))
+    pygame.display.set_icon(pygame.image.load("images\\gameicon.png").convert_alpha())
     pygame.display.set_caption('Escape from Wikipedia')
 
     while True:
