@@ -16,7 +16,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import math, pygame, rabbyt, random, os
-import utils
+import glutils
 from constants import *
 
 
@@ -25,7 +25,7 @@ class MySprite(rabbyt.sprites.Sprite):
     def __init__(self, texture=None, shape=None, tex_shape=(0,1,1,0)):
         if isinstance(texture, basestring):
             image = pygame.image.load(texture).convert_alpha()
-            texture = utils.getTexture(image)
+            texture = glutils.getTexture(image)
             shape = [0, image.get_height(), image.get_width(), 0]
         rabbyt.sprites.Sprite.__init__(self, texture=texture, shape=shape,
                           tex_shape=tex_shape)

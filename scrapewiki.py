@@ -16,7 +16,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import urllib2, StringIO, gzip, zlib, bs4, re, pygame, os
-import utils
+import glutils
 from sprites import MySprite
 from constants import *
 #import lxml
@@ -237,7 +237,7 @@ class Word(MySprite):
         left, bottom = pos
         right = left + cropped_image.get_width()
         top = bottom + cropped_image.get_height()
-        MySprite.__init__(self, texture=utils.getTexture(cropped_image),
+        MySprite.__init__(self, texture=glutils.getTexture(cropped_image),
                 shape=[left, top, right, bottom])
 
     def isLink(self):

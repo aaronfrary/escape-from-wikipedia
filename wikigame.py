@@ -19,9 +19,9 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 import sys, os, pygame, rabbyt
 from pygame.locals import *
 from constants import *
-import utils
-from sprites import Player, MySprite
-from scrape_wiki import Page
+import glutils
+from sprites import Player
+from scrapewiki import Page
 
 # Make sure we can use our .png and other images
 assert(pygame.image.get_extended() > 0)
@@ -81,7 +81,7 @@ def runGame():
                 if event.key in QUIT_KEYS:
                     terminate()
                 elif event.key in RESTART_KEYS:
-                    utils.scroll(-camx, -camy) # Reset glMatrix
+                    glutils.scroll(-camx, -camy) # Reset glMatrix
                     return
                 elif event.key in LEFT_KEYS:
                     player.goingleft = True
@@ -134,16 +134,16 @@ def runGame():
         # adjust camera if beyond the "camera slack"
         # TODO: Reimplement using Anims
         if camx - player.x > CAMERASLACK:
-            utils.scroll(player.x + CAMERASLACK - camx, 0)
+            glutils.scroll(player.x + CAMERASLACK - camx, 0)
             camx = player.x + CAMERASLACK
         elif player.x - camx > CAMERASLACK:
-            utils.scroll(player.x - CAMERASLACK - camx, 0)
+            glutils.scroll(player.x - CAMERASLACK - camx, 0)
             camx = player.x - CAMERASLACK
         if camy - player.y > CAMERASLACK:
-            utils.scroll(0, player.y + CAMERASLACK - camy)
+            glutils.scroll(0, player.y + CAMERASLACK - camy)
             camy = player.y + CAMERASLACK
         elif player.y - camy > CAMERASLACK:
-            utils.scroll(0, player.y - CAMERASLACK - camy)
+            glutils.scroll(0, player.y - CAMERASLACK - camy)
             camy = player.y - CAMERASLACK
 
         # Slow to FPS

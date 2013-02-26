@@ -14,19 +14,10 @@ more details.
 You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-# Some helper functions, and wrappers into OpenGL
+# Some helper functions and wrappers into OpenGL
 
-import pygame, math
+import pygame
 from OpenGL.GL import *
-
-def unitVec(start, end):
-    """Helper function, return unit vector between two points."""
-    x0, y0 = start
-    x1, y1 = end
-    x = x1 - x0
-    y = y1 - y0
-    norm = math.sqrt(x ** 2 + y ** 2)
-    return (x / norm, y / norm)
 
 def getTexture(surf):
     """Helper function, create texture to display `text' and return id."""
