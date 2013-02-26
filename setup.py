@@ -16,7 +16,7 @@ build_exe_options = {"packages": ["os"],
         }
 
 exe = Executable(
-        script="escape.py",
+        script="wikigame.py",
         base="Win32GUI"
         )
 
