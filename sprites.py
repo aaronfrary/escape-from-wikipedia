@@ -23,7 +23,7 @@ from constants import *
 class MySprite(rabbyt.sprites.Sprite):
     def __init__(self, texture=None, shape=None, tex_shape=(0,1,1,0)):
         if isinstance(texture, basestring):
-            image = pygame.image.load(texture)
+            image = pygame.image.load(texture).convert_alpha()
             texture = utils.getTexture(image)
             shape = [0, image.get_height(), image.get_width(), 0]
         rabbyt.sprites.Sprite.__init__(self, texture=texture, shape=shape,
@@ -94,6 +94,18 @@ class Player(Jumper):
         self.scale = PLAYER_SCALE
         self.xy = pos
         self.max_jumps = NUMBER_JUMPS
+        self.shadow = MySprite("images\\shadow.png")
+        self.shadow.scale = PLAYER_SCALE
+        self.alpha = 222
+
+    def update(self):
+        self.shadow.xy = self.xy
+        self.shadow.tex_shape = self.tex_shape
+        Jumper.update(self)
+
+    #def render(self):
+    #    self.shadow.render()
+    #    Jumper.render(self)
 
     def reset(self):
         self.xy = PLAYER_START

@@ -20,7 +20,7 @@ import sys, pygame, rabbyt
 from pygame.locals import *
 from constants import *
 import utils
-from sprites import Player
+from sprites import Player, MySprite
 from scrape_wiki import Page
 
 # Make sure we can use our .png and other images
@@ -52,7 +52,6 @@ def main():
     rabbyt.set_default_attribs()
     #pygame.display.set_icon(pygame.image.load("images.gameicon.png"))
     pygame.display.set_caption('Escape from Wikipedia')
-    utils.glEnable(utils.GL_TEXTURE_2D)
 
     while True:
         runGame()       # Allows restarts
@@ -61,7 +60,6 @@ def runGame():
     """Initialize new game."""
     camx = 0
     camy = 0
-    up_key_is_down = False
     fpsclock = pygame.time.Clock()
     # Short, simple page
     #page = Page("http://en.wikipedia.org/wiki/Solariellidae")
@@ -87,13 +85,12 @@ def runGame():
                 elif event.key in LEFT_KEYS:
                     player.goingleft = True
                     player.goingright = False
-                    player.tex_shape = (0, 1, 1, 0)
+                    player.tex_shape = (1, 1, 0, 0)
                 elif event.key in RIGHT_KEYS:
                     player.goingright = True
                     player.goingleft = False
-                    player.tex_shape = (1, 1, 0, 0)
-                elif event.key in UP_KEYS and not up_key_is_down:
-                    up_key_is_down = True
+                    player.tex_shape = (0, 1, 1, 0)
+                elif event.key in UP_KEYS:
                     player.jump()
                 elif event.key in DOWN_KEYS and player.plat is not None:
                     # Enter hyperlink
@@ -106,10 +103,8 @@ def runGame():
                     player.goingleft = False
                 elif event.key in RIGHT_KEYS:
                     player.goingright = False
-                elif event.key in UP_KEYS:
-                    up_key_is_down = False
-                    if player.velocity[1] > 0:
-                        player.velocity[1] *= 0.5   # Control jump height
+                elif event.key in UP_KEYS and player.velocity[1] > 0:
+                    player.velocity[1] *= 0.5   # Control jump height
 
         # Update positions
         player.update()
@@ -158,6 +153,7 @@ def runGame():
         # Draw screen
         rabbyt.clear(WHITE)
         rabbyt.render_unsorted(page.words)
+        player.shadow.render()
         player.render()
         pygame.display.flip()
 

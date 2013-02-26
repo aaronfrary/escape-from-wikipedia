@@ -226,7 +226,7 @@ class Word(MySprite):
             self.ff = FRICTION_FACTOR
         else:
             color = BLUE
-            self.ff = 0.9
+            self.ff = HL_FRICTION_FACTOR
         image = Word.WIKIFONT[attr][size].render(text, True, color)
         rect = image.get_rect()
         cropped_image = image.subsurface(rect.inflate(TEXT_CROPX * (size + 1),

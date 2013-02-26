@@ -30,14 +30,15 @@ INDENT = 60
 PLAYER_START = (100, 200)
 PLAYER_SCALE = 1
 
-CAMERASLACK = 80        # How far from the center the player moves before
-                        # moving the camera.
-G_ACCEL = -1.25         # General strength of gravity.
-BASE_SPEED = 3.7        # Horizontal acceleration rate for average creature.
-BASE_JUMPSPEED = 17.0   # Vertical speed (not accel) of average creature's jump.
+CAMERASLACK = 80      # How far from the center the player moves before
+                      # moving the camera.
+G_ACCEL = -1.25          # General strength of gravity.
+BASE_SPEED = 3.7         # Horizontal acceleration rate for average creature.
+BASE_JUMPSPEED = 17.0    # Vertical speed (not accel) of average creature's jump.
 MAX_VELOCITY = 20.0
-FRICTION_FACTOR = 0.8   # Default friction for words (higher is more slippery).
-NUMBER_JUMPS = 2        # Allow double jumps?
+FRICTION_FACTOR = 0.75      # Default friction for words (higher is more slippery).
+HL_FRICTION_FACTOR = 0.92   # Friction for hyperlinks
+NUMBER_JUMPS = 2            # Allow double jumps?
 
 BLACK    = (  0,   0,   0)
 WHITE    = (255, 255, 255)
