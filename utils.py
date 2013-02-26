@@ -47,5 +47,6 @@ def getTexture(surf):
     return tex_id
 
 def scroll(x, y):
+    """Wrapper for glTranslatef, in 2-D with reversed coordinates."""
     glTranslatef(-x, -y, 0)
 

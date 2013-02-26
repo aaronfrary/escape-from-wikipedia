@@ -21,6 +21,7 @@ from constants import *
 
 
 class MySprite(rabbyt.sprites.Sprite):
+    """rabbyt sprite that always uses OpenGL textures."""
     def __init__(self, texture=None, shape=None, tex_shape=(0,1,1,0)):
         if isinstance(texture, basestring):
             image = pygame.image.load(texture).convert_alpha()
@@ -31,6 +32,7 @@ class MySprite(rabbyt.sprites.Sprite):
 
 
 class Jumper(MySprite):
+    """Generic sprite affected by gravity and obstacles. Can move and jump."""
     def __init__(self, speed=1, jumpSpeed=1, grav=1,
                  texture=None, shape=None, tex_shape=(0,1,1,0)):
         MySprite.__init__(self, texture=texture, shape=shape,
@@ -91,6 +93,7 @@ class Jumper(MySprite):
 
 
 class Player(Jumper):
+    """Player-controlled sprite, with afterimage."""
     def __init__(self, pos):
         Jumper.__init__(self, texture=os.path.join('images', 'player.png'))
         self.scale = PLAYER_SCALE
@@ -99,16 +102,15 @@ class Player(Jumper):
         self.shadow = MySprite(os.path.join('images',
             'shadow' + str(random.randrange(1,6)) + ".png"))
         self.shadow.scale = PLAYER_SCALE
-        self.alpha = 222
 
     def update(self):
         self.shadow.xy = self.xy
         self.shadow.tex_shape = self.tex_shape
         Jumper.update(self)
 
-    #def render(self):
-    #    self.shadow.render()
-    #    Jumper.render(self)
+    def render(self):
+        self.shadow.render()
+        Jumper.render(self)
 
     def reset(self):
         self.xy = PLAYER_START

@@ -38,12 +38,12 @@ TIME_FACTOR = 1000.0   # Helps rabbyt read pygame ticks
 
 
 def terminate():
-    """Quit and clean up"""
+    """Quit and clean up."""
     pygame.quit()
     sys.exit()
 
 def main():
-    """Start and setup"""
+    """Initialize environment, then start game instance."""
     pygame.init()
     pygame.display.set_mode( (WINWIDTH, WINHEIGHT),
                              pygame.OPENGL | pygame.DOUBLEBUF )
@@ -154,7 +154,6 @@ def runGame():
         # Draw screen
         rabbyt.clear(WHITE)
         rabbyt.render_unsorted(page.words)
-        player.shadow.render()
         player.render()
         pygame.display.flip()
 

@@ -29,9 +29,10 @@ BULLET = 0x2022   # Unicode character
 # Zero-width space character causes problems
 ZERO_WIDTH = re.compile(u'\ufeff')
 
-HTML404 = """<HTML><HEAD><TITLE>ERROR: The requested URL could not be retrieved</TITLE> </HEAD> <BODY><H2>ERROR</H2> <H2>The requested URL could not be retrieved</H2> <P>While trying to retrieve the URL:<A HREF="{0}">{0}</A> </P> <P>The following error was encountered: <STRONG>Connection to Wikipedia Failed</STRONG> </P> <P>The system returned: <I>(101) Network is unreachable</I> </P> <P>The remote host or network may be down.  Please try the request again.</P> <P>Your cache administrator is DEAD.</P> </BODY> </HTML>"""
+HTML404 = """<html><head><title>ERROR: The requested URL could not be retrieved</title> </head> <body><h2>ERROR</h2> <h2>The requested URL could not be retrieved</h2> <p>While trying to retrieve the URL:<a href="{0}">{0}</a> </p> <p>The following error was encountered: <strong>Connection to Wikipedia Failed</strong> </p> <p>The system returned: <i>(101) Network is unreachable</i> </p> <p>The remote host or network may be down.  Please try the request again.</p> <p>Your cache administrator is DEAD.</p> </body> </html>"""
 
 def fontCheck(attr):
+    """Load font files only when needed, and only once each."""
     if Word.WIKIFONT[attr] == None:
         if attr == REGULAR:
             Word.WIKI_REGULAR = [pygame.font.Font(os.path.join('fonts', 'arial.ttf'),
@@ -218,7 +219,7 @@ class Word(MySprite):
     WIKIFONT = {REGULAR : WIKI_REGULAR, BOLD : WIKI_BOLD, ITALIC : WIKI_ITALIC,
             BOLDITAL : WIKI_BOLDITAL}
 
-    def __init__(self, text, pos, attr=REGULAR, size = 0, link=""):
+    def __init__(self, text, pos, attr=REGULAR, size=0, link=""):
         fontCheck(attr)
         self.text = text
         self.hyperlink = link
@@ -244,6 +245,7 @@ class Word(MySprite):
 
 
 class Page:
+    """Represents a Wikipedia page as a url and a collection of words."""
     def __init__(self, url):
         self.url = url
         self.words = getWords(getHTML(url))
