@@ -117,4 +117,3 @@ class Player(Jumper):
         self.velocity = [0.0, 0.0]
         self.plat = None
 
-

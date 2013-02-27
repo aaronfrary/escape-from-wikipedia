@@ -203,12 +203,14 @@ class Word(MySprite):
     those that are hyperlinks, which can be also be "followed".
 
     Constructors:
-        'text' : The character string of the Word.
-        'pos'  : The starting position
-                 of the bottom-left corner.
-        'attr' : 'bold', 'italic', 'bold-italic', or "" for regular.
-        'size' : 0 for small font, 1 for medium, or 2 for large.
-        'link' : Address of hyperlink, if any.
+        'text'   : The character string of the Word.
+        'pos'    : The starting position
+                   of the bottom-left corner.
+        'attr'   : 'bold', 'italic', 'bold-italic', or "" for regular.
+        'size'   : 0 for small font, 1 for medium, or 2 for large.
+        'link'   : Address of hyperlink, if any.
+        'color'  : Overrides plain text color.
+        'hlcolor : Overrides hyperlink color.
     """
     WIKI_REGULAR = None
     WIKI_BOLD = None
@@ -219,15 +221,14 @@ class Word(MySprite):
     WIKIFONT = {REGULAR : WIKI_REGULAR, BOLD : WIKI_BOLD, ITALIC : WIKI_ITALIC,
             BOLDITAL : WIKI_BOLDITAL}
 
-    def __init__(self, text, pos, attr=REGULAR, size=0, link=""):
+    def __init__(self, text, pos, attr=REGULAR, size=0, link="", color=BLACK, hlcolor=BLUE):
         fontCheck(attr)
         self.text = text
         self.hyperlink = link
         if link == "":
-            color = BLACK
             self.ff = FRICTION_FACTOR
         else:
-            color = BLUE
+            color = hlcolor
             self.ff = HL_FRICTION_FACTOR
         image = Word.WIKIFONT[attr][size].render(text, True, color)
         rect = image.get_rect()
@@ -249,4 +250,14 @@ class Page:
     def __init__(self, url):
         self.url = url
         self.words = getWords(getHTML(url))
+        self.sections = [0]
+        y = -HALF_WINHEIGHT
+        i = 0
+        for w in self.words:
+            if y - w.bottom > WINHEIGHT:
+                self.sections.append(i)
+                y -= WINHEIGHT
+            i += 1
+        self.sections.append(i)
+        self.visible_words = self.words[:self.sections[1]]
 

@@ -21,7 +21,7 @@ from pygame.locals import *
 from constants import *
 import glutils
 from sprites import Player
-from scrapewiki import Page
+from scrapewiki import Page, Word
 
 # Make sure we can use our .png and other images
 assert(pygame.image.get_extended() > 0)
@@ -59,16 +59,22 @@ def main():
 
 def runGame():
     """Initialize new game."""
+    fpsclock = pygame.time.Clock()
     camx = 0
     camy = 0
-    fpsclock = pygame.time.Clock()
+    section = 0
+    player = Player(PLAYER_START)
+    loading = Word("LOADING", (camx - 210, camy - 60),
+            attr=BOLD, size=2, color=PURPLE)
+    rabbyt.clear(WHITE)
+    loading.render()     # Loading screen
+    pygame.display.flip()
     # Short, simple page
     #page = Page("http://en.wikipedia.org/wiki/Solariellidae")
     # Longest page in Wikipedia
     #page = Page("http://en.wikipedia.org/wiki/Character_mask")
     # Random page
     page = Page("http://en.wikipedia.org/wiki/Special:Random")
-    player = Player(PLAYER_START)
     #print len(page.words)
 
     # Main loop
@@ -96,6 +102,11 @@ def runGame():
                 elif event.key in DOWN_KEYS and player.plat is not None:
                     # Enter hyperlink
                     if not player.plat.hyperlink == "":
+                        loading = Word("LOADING", (camx - 210, camy - 60),
+                                attr=BOLD, size=2, color=PURPLE)
+                        rabbyt.clear(WHITE)
+                        loading.render()   # Display load screen
+                        pygame.display.flip()
                         page = Page(player.plat.hyperlink)
                         #print len(page.words)
                         player.reset()
@@ -107,11 +118,12 @@ def runGame():
                 elif event.key in UP_KEYS and player.velocity[1] > 0:
                     player.velocity[1] *= 0.5   # Control jump height
 
-        # Update positions
+        # Update position
         player.update()
 
         # Check for player-platform collisions
-        collisions = rabbyt.collisions.aabb_collide_single(player, page.words)
+        collisions = rabbyt.collisions.aabb_collide_single(player,
+                page.visible_words)
         # Player forced out of platforms by most direct route, more or less;
         for plat in collisions:
             if (player.right / 3 + 2 * player.left / 3 < plat.left
@@ -131,8 +143,9 @@ def runGame():
                 player.top = plat.bottom - 1
                 player.velocity[1] = 0   # Jump stops
 
+        prev_section = section
+        prev_y = camy
         # adjust camera if beyond the "camera slack"
-        # TODO: Reimplement using Anims
         if camx - player.x > CAMERASLACK:
             glutils.scroll(player.x + CAMERASLACK - camx, 0)
             camx = player.x + CAMERASLACK
@@ -146,6 +159,16 @@ def runGame():
             glutils.scroll(0, player.y - CAMERASLACK - camy)
             camy = player.y - CAMERASLACK
 
+        # Keep track of viewing section
+        section += int(prev_y / WINHEIGHT) - int(camy / WINHEIGHT)
+        if not section == prev_section:
+            if section > len(page.sections) + 1:
+                glutils.scroll(-camx, -camy) # Reset glMatrix
+                return
+            page.visible_words = page.words[
+                    page.sections[min(len(page.sections) - 1, max(0, section - 1))]:
+                    page.sections[max(0, min(len(page.sections) - 1, section + 1))]]
+
         # Slow to FPS
         fpsclock.tick(FPS)
         # Need to tell Rabbyt what time it is every frame
@@ -153,7 +176,7 @@ def runGame():
 
         # Draw screen
         rabbyt.clear(WHITE)
-        rabbyt.render_unsorted(page.words)
+        rabbyt.render_unsorted(page.visible_words)
         player.render()
         pygame.display.flip()
 
