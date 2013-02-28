@@ -21,9 +21,6 @@ from sprites import MySprite
 from constants import *
 #import lxml
 
-TEXT_CROPX = -2
-TEXT_CROPY = -2
-
 BULLET = 0x2022   # Unicode character
 
 # Zero-width space character causes problems
@@ -231,14 +228,11 @@ class Word(MySprite):
             color = hlcolor
             self.ff = HL_FRICTION_FACTOR
         image = Word.WIKIFONT[attr][size].render(text, True, color)
-        rect = image.get_rect()
-        cropped_image = image.subsurface(rect.inflate(TEXT_CROPX * (size + 1),
-                                                      TEXT_CROPY * (size + 1)))
         # Initialize sprite
         left, bottom = pos
-        right = left + cropped_image.get_width()
-        top = bottom + cropped_image.get_height()
-        MySprite.__init__(self, texture=glutils.getTexture(cropped_image),
+        right = left + image.get_width()
+        top = bottom + image.get_height()
+        MySprite.__init__(self, texture=glutils.getTexture(image),
                 shape=[left, top, right, bottom])
 
     def isLink(self):

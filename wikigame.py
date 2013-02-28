@@ -64,7 +64,7 @@ def runGame():
     camy = 0
     section = 0
     player = Player(PLAYER_START)
-    loading = Word("LOADING", (camx - 210, camy - 60),
+    loading = Word("LOADING", (camx - 205, camy - 55),
             attr=BOLD, size=2, color=PURPLE)
     rabbyt.clear(WHITE)
     loading.render()     # Loading screen
@@ -92,17 +92,17 @@ def runGame():
                 elif event.key in LEFT_KEYS:
                     player.goingleft = True
                     player.goingright = False
-                    player.tex_shape = (1, 1, 0, 0)
+                    player.image.tex_shape = (1, 1, 0, 0)
                 elif event.key in RIGHT_KEYS:
                     player.goingright = True
                     player.goingleft = False
-                    player.tex_shape = (0, 1, 1, 0)
+                    player.image.tex_shape = (0, 1, 1, 0)
                 elif event.key in UP_KEYS:
                     player.jump()
                 elif event.key in DOWN_KEYS and player.plat is not None:
                     # Enter hyperlink
                     if not player.plat.hyperlink == "":
-                        loading = Word("LOADING", (camx - 210, camy - 60),
+                        loading = Word("LOADING", (camx - 205, camy - 55),
                                 attr=BOLD, size=2, color=PURPLE)
                         rabbyt.clear(WHITE)
                         loading.render()   # Display load screen

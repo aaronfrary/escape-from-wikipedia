@@ -101,16 +101,18 @@ class Player(Jumper):
         self.max_jumps = NUMBER_JUMPS
         self.shadow = MySprite(os.path.join('images',
             'shadow' + str(random.randrange(1,6)) + ".png"))
-        self.shadow.scale = PLAYER_SCALE
+        self.image = MySprite(texture=os.path.join('images', 'player.png'))
+        self.image.x = self.attrgetter('x') - 4
+        self.image.y = self.attrgetter('y') - 5
 
     def update(self):
-        self.shadow.xy = self.xy
-        self.shadow.tex_shape = self.tex_shape
+        self.shadow.xy = self.image.xy
+        self.shadow.tex_shape = self.image.tex_shape
         Jumper.update(self)
 
     def render(self):
         self.shadow.render()
-        Jumper.render(self)
+        self.image.render()
 
     def reset(self):
         self.xy = PLAYER_START

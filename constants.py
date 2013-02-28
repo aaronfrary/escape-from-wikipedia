@@ -28,7 +28,7 @@ PARSPACE = 150
 INDENT = 60
 
 PLAYER_START = (100, 200)
-PLAYER_SCALE = 1
+PLAYER_SCALE = 0.75
 
 CAMERASLACK = 80      # How far from the center the player moves before
                       # moving the camera.
