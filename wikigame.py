@@ -75,6 +75,8 @@ def runGame():
     #page = Page("http://en.wikipedia.org/wiki/Character_mask")
     # Random page
     page = Page("http://en.wikipedia.org/wiki/Special:Random")
+    # xkcd
+    #page = Page("http://en.wikipedia.org/wiki/Xkcd")
     #print len(page.words)
 
     # Main loop

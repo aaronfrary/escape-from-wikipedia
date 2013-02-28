@@ -7,7 +7,7 @@ includes = ["OpenGL.platform.win32", "platform", "OpenGL.arrays",
             "OpenGL.arrays.lists", "OpenGL.arrays.numbers",
             "OpenGL.arrays.strings"]
 
-includefiles = ["README", "LICENSE", "images", "fonts"]
+includefiles = ["README.txt", "LICENSE.txt", "images", "fonts"]
 
 build_exe_options = {"packages": ["os"],
         "includes": includes,
