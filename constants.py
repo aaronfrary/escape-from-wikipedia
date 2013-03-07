@@ -1,20 +1,20 @@
-"""Copyright 2013 Aaron Graham-Horowitz
-
-This file is part of Escape from Wikipedia.
-
-Escape from Wikipedia is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by the Free
-Software Foundation, either version 3 of the License, or any later version.
-
-Escape from Wikipedia is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-more details.
-
-You should have received a copy of the GNU General Public License along with
-this program.  If not, see <http://www.gnu.org/licenses/>.
+"""Constants that are used in multiple files. Use `from constants import *'.
 """
-# Some constants that are used in multiple parts of the program
+# Copyright 2013 Aaron Graham-Horowitz
+# 
+# This file is part of Escape from Wikipedia.
+# 
+# Escape from Wikipedia is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or any later version.
+# 
+# Escape from Wikipedia is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+# 
+# You should have received a copy of the GNU General Public License along with
+# this program.  If not, see <http://www.gnu.org/licenses/>.
 
 WINWIDTH = 780         # Width of the program's window, in pixels.
 WINHEIGHT = 620         # Height in pixels.

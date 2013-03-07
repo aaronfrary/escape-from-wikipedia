@@ -1,24 +1,29 @@
-"""Copyright 2013 Aaron Graham-Horowitz
+"""Functions and classes for generating `Word' and `Page' objects from the web.
 
-This file is part of Escape from Wikipedia.
-
-Escape from Wikipedia is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by the Free
-Software Foundation, either version 3 of the License, or any later version.
-
-Escape from Wikipedia is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-more details.
-
-You should have received a copy of the GNU General Public License along with
-this program.  If not, see <http://www.gnu.org/licenses/>.
+All functions are intended to be private. Other modules should import only
+`Page' and `Word' as necessary.
 """
+# Copyright 2013 Aaron Graham-Horowitz
+# 
+# This file is part of Escape from Wikipedia.
+# 
+# Escape from Wikipedia is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or any later version.
+# 
+# Escape from Wikipedia is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+# 
+# You should have received a copy of the GNU General Public License along with
+# this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import urllib2, StringIO, gzip, zlib, bs4, re, pygame, os
 import glutils
 from sprites import MySprite
 from constants import *
+# lxml is not necessary, as parsing is not currently a bottleneck.
 #import lxml
 
 BULLET = 0x2022   # Unicode character
@@ -196,13 +201,11 @@ def strToWords(s, y, x=0, attr=REGULAR, size=0, link=""):
 
 
 class Word(MySprite):
-    """Words are static obstacles generally used as platforms, except
-    those that are hyperlinks, which can be also be "followed".
+    """Static sprites used as platforms and that may have followable hyperlinks.
 
     Constructors:
         'text'   : The character string of the Word.
-        'pos'    : The starting position
-                   of the bottom-left corner.
+        'pos'    : The starting position of the bottom-left corner.
         'attr'   : 'bold', 'italic', 'bold-italic', or "" for regular.
         'size'   : 0 for small font, 1 for medium, or 2 for large.
         'link'   : Address of hyperlink, if any.
@@ -240,7 +243,12 @@ class Word(MySprite):
 
 
 class Page:
-    """Represents a Wikipedia page as a url and a collection of words."""
+    """Represents a Wikipedia page as a url and a collection of Words.
+    
+    The `sections' attribute divides the list of words into managable chunks,
+    so that the main loop can choose to display only words near the player's
+    location.
+    """
     def __init__(self, url):
         self.url = url
         self.words = getWords(getHTML(url))

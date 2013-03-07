@@ -1,3 +1,5 @@
+"""Build Windows executable using cx_freeze.
+"""
 
 from cx_Freeze import setup, Executable
 

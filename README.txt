@@ -2,7 +2,7 @@ Escape from Wikipedia
 Copyright 2013 Aaron Graham-Horowitz
 
 INTRODUCTION
-Escape from Wikipedia v1.0 is the precursor to what I hope will soon be a game.  Right now, it is simply a set of interesting mechanics, that I hope you will enjoy playing around with.  If you have feedback about the game, you can send email to aaron(at)aaronsgh.com. I would love to hear what you think, and any ideas you have for directions to take the game or ways to make it more enjoyable.
+Escape from Wikipedia v0.1 is the precursor to what I hope will soon be a game.  Right now, it is simply a set of interesting mechanics, that I hope you will enjoy playing around with.  If you have feedback about the game, you can send email to aaron(at)aaronsgh.com. I would love to hear what you think, and any ideas you have for directions to take the game or ways to make it more enjoyable.
 
 SETUP
 If you are on Windows, to play simply double-click the batch file 'play.bat', or run the executable 'wikigame.exe' in the 'bin' folder. If you're not on Windows, you'll have to wait until I finish figuring out all this distribution stuff, or pull the source yourself from <https://github.com/aaronsgh/escape-from-wikipedia>.
