@@ -19,6 +19,9 @@ See "README.txt" for instructions.
 # You should have received a copy of the GNU General Public License along with
 # this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# TODO: Add some kind of score keeping.
+# TODO: Create some sort of reward for reaching the top of a page.
+
 import sys, os, pygame, rabbyt
 from pygame.locals import *
 from constants import *
@@ -36,7 +39,7 @@ DOWN_KEYS = (K_DOWN, K_s)
 QUIT_KEYS = (K_ESCAPE, )
 RESTART_KEYS = (K_r, )
 
-FPS = 30
+FPS = 90
 TIME_FACTOR = 1000.0   # Helps rabbyt read pygame ticks
 
 
@@ -62,6 +65,7 @@ def main():
 
 def runGame():
     """Initialize new game."""
+    pygame.display.set_caption('Escape from Wikipedia - Loading')
     fpsclock = pygame.time.Clock()
     camx = 0
     camy = 0
@@ -78,6 +82,7 @@ def runGame():
     #page = Page("http://en.wikipedia.org/wiki/Character_mask")
     # Random page
     page = Page("http://en.wikipedia.org/wiki/Special:Random")
+    pygame.display.set_caption('Escape from...   ' + page.title)
     # xkcd
     #page = Page("http://en.wikipedia.org/wiki/Xkcd")
     #print len(page.words)
@@ -107,14 +112,19 @@ def runGame():
                 elif event.key in DOWN_KEYS and player.plat is not None:
                     # Enter hyperlink
                     if not player.plat.hyperlink == "":
+                        pygame.display.set_caption(
+                                'Escape from Wikipedia - Loading')
                         loading = Word("LOADING", (camx - 205, camy - 55),
                                 attr=BOLD, size=2, color=PURPLE)
                         rabbyt.clear(WHITE)
                         loading.render()   # Display load screen
                         pygame.display.flip()
                         page = Page(player.plat.hyperlink)
+                        pygame.display.set_caption(page.title)
+                        pygame.display.set_caption('Escape from...   '
+                                + page.title)
                         #print len(page.words)
-                        player.reset()
+                        player.reset(page)
             elif event.type == KEYUP:
                 if event.key in LEFT_KEYS:
                     player.goingleft = False
@@ -143,6 +153,8 @@ def runGame():
                 player.plat = plat
                 player.velocity[1] = 0   # Stop falling
                 player.jumps = 0         # Reset jumps
+                if plat.hyperlink != "":
+                    player.hl_landed(TIMEOUT)
             elif (2 * player.top / 3 + player.bottom / 3 < plat.bottom
             and player.velocity[1] > 0):
                 player.top = plat.bottom - 1
@@ -182,6 +194,7 @@ def runGame():
         # Draw screen
         rabbyt.clear(WHITE)
         rabbyt.render_unsorted(page.visible_words)
+        rabbyt.render_unsorted(page.lines)
         player.render()
         pygame.display.flip()
 

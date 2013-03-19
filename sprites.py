@@ -20,6 +20,19 @@ import math, pygame, rabbyt, random, os
 import glutils
 from constants import *
 
+class Counter:
+    """Simple counter class. Call objects to retrieve or set value."""
+    def __init__(self, startval=0):
+        self.val = startval
+    def __call__(self, update=None):
+        if update is not None:
+            self.val = update
+        return self.val
+    def inc(self):
+        self.val += 1
+    def dec(self):
+        self.val -= 1
+
 
 class MySprite(rabbyt.sprites.Sprite):
     """rabbyt sprite that always uses OpenGL textures."""
@@ -34,12 +47,12 @@ class MySprite(rabbyt.sprites.Sprite):
 
 class Jumper(MySprite):
     """Generic sprite affected by gravity and obstacles. Can move and jump."""
-    def __init__(self, speed=1, jumpSpeed=1, grav=1,
+    def __init__(self, speed=1, jumpspeed=1, grav=1,
                  texture=None, shape=None, tex_shape=(0,1,1,0)):
         MySprite.__init__(self, texture=texture, shape=shape,
                           tex_shape=tex_shape)
         self.gaccel = grav * G_ACCEL
-        self.jumpSpeed = jumpSpeed * BASE_JUMPSPEED
+        self.jumpspeed = jumpspeed * BASE_JUMPSPEED
         self.plat = None
         self.jumps = 1
         self.max_jumps = 1
@@ -86,11 +99,14 @@ class Jumper(MySprite):
 
     def jump(self):
         if self.jumps < self.max_jumps:
+            js = self.jumpspeed
+            if self.plat is not None and self.hl_landed() > 0:
+                js *= HLBOOST
+            if self.jumps > 0:
+                js *= DOUBLE_JUMP_PENALTY
             self.plat = None
             self.jumps += 1
-            if self.velocity[1] < 0:
-                self.velocity[1] *= 0.5   # Better fall-catching
-            self.velocity[1] += self.jumpSpeed
+            self.velocity[1] = js
 
 
 class Player(Jumper):
@@ -100,23 +116,37 @@ class Player(Jumper):
         self.scale = PLAYER_SCALE
         self.xy = pos
         self.max_jumps = NUMBER_JUMPS
+        # Create shadow
         self.shadow = MySprite(os.path.join('images',
-            'shadow' + str(random.randrange(1,6)) + ".png"))
+            'shadow' + str(random.randrange(4,6)) + ".png"))
+        # Create enlarged image
         self.image = MySprite(texture=os.path.join('images', 'player.png'))
         self.image.x = self.attrgetter('x') - 4
         self.image.y = self.attrgetter('y') - 5
+        # Set counters
+        self.hl_landed = Counter()
+        self.counters = [self.hl_landed]
 
     def update(self):
         self.shadow.xy = self.image.xy
         self.shadow.tex_shape = self.image.tex_shape
+        # Decrement counters
+        for c in self.counters:
+            if c() > 0:
+                c.dec()
         Jumper.update(self)
 
     def render(self):
         self.shadow.render()
         self.image.render()
 
-    def reset(self):
-        self.xy = PLAYER_START
+    def reset(self, page=None):
+        if page is None:
+            self.xy = PLAYER_START
+        else:
+            w = random.sample(page.words, 1)[0]
+            self.bottom = w.top + 1
+            self.x = (w.left + w.right) / 2
         self.velocity = [0.0, 0.0]
         self.plat = None
 

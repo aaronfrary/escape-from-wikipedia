@@ -18,6 +18,8 @@
 
 import pygame
 from OpenGL.GL import *
+from ctypes import *
+from constants import *
 
 def getTexture(surf):
     """Helper function, create texture to display `text' and return id."""

@@ -19,6 +19,9 @@ All functions are intended to be private. Other modules should import only
 # You should have received a copy of the GNU General Public License along with
 # this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# TODO: Continue to improve parsing. Spaces appearing near parenthesis and
+# apostrophes is still an issue.
+
 import urllib2, StringIO, gzip, zlib, bs4, re, pygame, os
 import glutils
 from sprites import MySprite
@@ -92,11 +95,15 @@ def getHTML(addr):
         html_doc = decode(usock)
         usock.close()
         return html_doc
-    except urllib2.URLError:
+    except (urllib2.URLError, BadStatusLine):
         return HTML404.format(addr)
 
 def getWords(html_doc):
-    """Return all `Word's in an HTML string, with formatting."""
+    """Return all `Word's in an HTML string, with formatting.
+    
+    Return page title and horizontal rule locations as well.
+    First step in recursive parsing process.
+    """
     # Get rid of tags that won't be used
     pattern = re.compile('<table.*?</table>', re.DOTALL)
     html_doc = pattern.sub('', html_doc)
@@ -112,14 +119,29 @@ def getWords(html_doc):
     soup = bs4.BeautifulSoup(html_doc, from_encoding="utf-8")
     #soup = bs4.BeautifulSoup(html_doc, "lxml", from_encoding="utf-8")
     y = 0
-    # Start by getting title
-    words, _, _ = strToWords(getStr(soup.title), y, size=2)
+    # Get page title
+    title = getStr(soup.title)
+    # Get article title
+    pattern = re.compile(' - Wikipedia, the free encyclopedia')
+    abbrev = pattern.sub('', title)
+    words, _, _ = strToWords(abbrev, y, size=2)
+    # Pretty sure this doesn't happen anymore, but can't hurt to check.
+    if (words == []):
+        words, _, _ = strToWords("Title Not Found", y, size=1, color=RED)
+    lines = [words[-1].bottom - LINE_PADDING]
+    y = words[-1].bottom - VSPACE
+    new_words, _, _ = strToWords("From Wikipedia, the free encyclopedia", y,
+            color=GRAY)
+    for w in new_words:
+        w.ff = SLIPPERY     # Just for kicks
+    words.extend(new_words)
     # Find relevant text-containing elements
     for tag in soup.body.find_all(['h2', 'dt', 'p', 'ul']):
         new_words = []
         y = words[-1].bottom - PARSPACE
         if tag.name == u'h2':
             new_words, _, _ = strToWords(getStr(tag), y, size=1)
+            lines.append(new_words[-1].bottom - LINE_PADDING)
         elif tag.name == u'dt':
             new_words, _, _ = strToWords(getStr(tag), y + PARSPACE / 2, attr=BOLD)
         elif tag.name == u'p':
@@ -129,7 +151,8 @@ def getWords(html_doc):
         words.extend(new_words)
         if tag.name == u'h2' and words[-1].text == u'References':
             break # That's as far down as we go
-    return words
+    # Reformat title for caption display
+    return title.encode('ascii', 'replace') , words, lines
 
 def getStr(tag):
     """Strips away `div' and `span' tags obscuring text."""
@@ -181,7 +204,8 @@ def getParWords(tag, y, x=0, attr=REGULAR, link = ""):
         words.extend(new_words)
     return (words, x, y)
 
-def strToWords(s, y, x=0, attr=REGULAR, size=0, link=""):
+def strToWords(s, y, x=0, attr=REGULAR, size=0, link="", color=BLACK,
+        hlcolor=BLUE):
     """Return string of words as `Word's, with correct locations."""
     if s is None:
         return ([], x, y)
@@ -190,7 +214,7 @@ def strToWords(s, y, x=0, attr=REGULAR, size=0, link=""):
     for word in s.split():
         if len(word) < 1:
             continue
-        w = Word(word, (x, y), attr, size, link)
+        w = Word(word, (x, y), attr, size, link, color, hlcolor)
         if w.right >= PAGEWIDTH:
             w.left = 0
             w.y -= (w.top - w.bottom) + VSPACE
@@ -198,6 +222,15 @@ def strToWords(s, y, x=0, attr=REGULAR, size=0, link=""):
         y = w.bottom
         words.append(w)
     return (words, x, y)
+
+
+class Line(MySprite):
+    """Sprite for horizontal line across width of screen."""
+    def __init__(self, y):
+        MySprite.__init__(self, texture=os.path.join('images', 'graypxl.png'))
+        self.top = y
+        self.left = 0
+        self.scale_x = PAGEWIDTH
 
 
 class Word(MySprite):
@@ -225,11 +258,15 @@ class Word(MySprite):
         fontCheck(attr)
         self.text = text
         self.hyperlink = link
-        if link == "":
-            self.ff = FRICTION_FACTOR
-        else:
+        if not link == "":
             color = hlcolor
-            self.ff = HL_FRICTION_FACTOR
+        self.ff = FRICTION_FACTOR
+        if text.lower() in STICKY_WORDS or (
+                text.lower() + 's') in STICKY_WORDS:
+            self.ff = STICKY
+        if text.lower() in SLIPPERY_WORDS or (
+                text.lower() + 's') in SLIPPERY_WORDS:
+            self.ff = SLIPPERY
         image = Word.WIKIFONT[attr][size].render(text, True, color)
         # Initialize sprite
         left, bottom = pos
@@ -251,7 +288,9 @@ class Page:
     """
     def __init__(self, url):
         self.url = url
-        self.words = getWords(getHTML(url))
+        self.title, self.words, lines = getWords(getHTML(url))
+        self.lines = [Line(y) for y in lines]
+        self.lines[0].scale_y = 2
         self.sections = [0]
         y = -HALF_WINHEIGHT
         i = 0
