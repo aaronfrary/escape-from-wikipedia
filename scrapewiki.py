@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License along with
 # this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import pygame, os, wikipedia, glutils
+import pygame, os, re, wikipedia, math, glutils
 from sprites import MySprite
 from constants import *
 # lxml is not necessary, as parsing is not currently a bottleneck.
@@ -125,16 +125,24 @@ class Page:
     location.
     """
     def __init__(self, title):
+        wikipage = wikipedia.page(title)
+        self.links = wikipage.links
+        link_matcher = re.compile("|".join(self.links), re.IGNORECASE)
+        def linkMarker(match):
+            s = match.group(0)
+            # End with two delimeters to mark "no link"
+            return (" " + LINK_DELIM + s.replace(" ", "_") + LINK_DELIM
+                    + " " + s + " " + LINK_DELIM + LINK_DELIM + " ")
         self.title = title
         self.wc = 0 # Wordcount
         self.words = []
         self.segments = [0]
         # Variables used only in initialization
-        self.y = 0
-        self.segment_y = -HALF_WINHEIGHT
+        self._y = 0
+        self._segment_y = -HALF_WINHEIGHT
+        self._link = ""
         # Helper function (apologies for the abuse of scoping)
-        def strToWords(s, attr=REGULAR, size=0, link="",
-                color=BLACK, hlcolor=BLUE):
+        def strToWords(s, attr=REGULAR, size=0, color=BLACK, hlcolor=BLUE):
             """Return string of words as `Word's, with correct locations."""
             if s is None:
                 return
@@ -142,38 +150,44 @@ class Page:
             for word in s.split():
                 if len(word) < 1:
                     continue
-                w = Word(word, (x, self.y), attr, size, link, color, hlcolor)
+                if word[0] == LINK_DELIM:
+                    self._link = word[1:-1].replace("_", " ")
+                    print self._link
+                    continue
+                # Punctuation is sometimes treated as a separate word
+                if not word[0] in PUNCTUATION:
+                    x += HSPACE * math.sqrt(size + 1)
+                w = Word(word, (x, self._y), attr, size, self._link, color, hlcolor)
                 # Place word
                 if w.right >= PAGEWIDTH:
                     w.left = 0
                     w.y -= (w.top - w.bottom) + VSPACE
-                x = w.right + HSPACE * (size + 1)
-                self.y = w.bottom
+                x = w.right
+                self._y = w.bottom
                 # Segmenting
-                if self.segment_y - self.y > WINHEIGHT:
+                if self._segment_y - self._y > WINHEIGHT:
                     self.segments.append(self.wc)
-                    self.segment_y -= WINHEIGHT
+                    self._segment_y -= WINHEIGHT
                 self.words.append(w)
                 self.wc += 1
 
         # BEGIN INITIALIZATION
-        wikipage = wikipedia.page(title)
         # Title line
         strToWords(title, size=2)
-        lines = [self.y - LINE_PADDING]
-        self.y -= VSPACE
+        lines = [self._y - LINE_PADDING]
+        self._y -= VSPACE
         strToWords("From Wikipedia, the free encyclopedia", color=GRAY)
-        self.y -= PARSPACE
+        self._y -= PARSPACE
         # Sections
         for section in wikipage.sections:
-            text = wikipage.section(section)
+            text = link_matcher.sub( linkMarker, wikipage.section(section) )
             # Section header
             strToWords(section, size=1)
-            lines.append(self.y - LINE_PADDING)
-            self.y -= VSPACE
+            lines.append(self._y - LINE_PADDING)
+            self._y -= VSPACE
             # Section body
             strToWords(text)
-            self.y -= PARSPACE
+            self._y -= PARSPACE
         # Finalize state
         self.lines = [Line(y) for y in lines]
         self.lines[0].scale_y = 2   # bar under title

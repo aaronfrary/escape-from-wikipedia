@@ -55,6 +55,8 @@ SLIPPERY_WORDS = ('ice', 'icy', 'slip', 'slippery', 'slipped', 'oil', 'oily',
 'oiled', 'soap', 'soaped', 'soapy', 'grease', 'greased', 'greasy', 'olive',
 'greece', 'greek')
 
+PUNCTUATION = (',', '.', ';', ':', '?', '!', "'", '*')
+
 BLACK    = (  0,   0,   0)
 WHITE    = (255, 255, 255)
 GRAY     = (150, 150, 150)
@@ -72,4 +74,6 @@ BOLDITAL = 3
 SMALL_FONT_SIZE  = 36
 MEDIUM_FONT_SIZE = 48
 LARGE_FONT_SIZE  = 92
+
+LINK_DELIM = '@'
 
