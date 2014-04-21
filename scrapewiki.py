@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License along with
 # this program.  If not, see <http://www.gnu.org/licenses/>.
 
+### TODO: Find a better way to implement links
+
 import pygame, os, re, wikipedia, math, glutils
 from sprites import MySprite
 from constants import *
