@@ -69,7 +69,7 @@ def runGame():
     fpsclock = pygame.time.Clock()
     camx = 0
     camy = 0
-    section = 0
+    segment = 0
     player = Player(PLAYER_START)
     loading = Word("LOADING", (camx - 205, camy - 55),
             attr=BOLD, size=2, color=PURPLE)
@@ -77,14 +77,12 @@ def runGame():
     loading.render()     # Loading screen
     pygame.display.flip()
     # Short, simple page
-    #page = Page("http://en.wikipedia.org/wiki/Solariellidae")
+    #page = Page("Solariellidae")
     # Longest page in Wikipedia
-    #page = Page("http://en.wikipedia.org/wiki/Character_mask")
-    # Random page
-    page = Page("http://en.wikipedia.org/wiki/Special:Random")
+    #page = Page("Character Mask")
+    page = Page("Xkcd")
     pygame.display.set_caption('Escape from...   ' + page.title)
     # xkcd
-    #page = Page("http://en.wikipedia.org/wiki/Xkcd")
     #print len(page.words)
 
     # Main loop
@@ -160,7 +158,7 @@ def runGame():
                 player.top = plat.bottom - 1
                 player.velocity[1] = 0   # Jump stops
 
-        prev_section = section
+        prev_segment = segment
         prev_y = camy
         # adjust camera if beyond the "camera slack"
         if camx - player.x > CAMERASLACK:
@@ -176,15 +174,15 @@ def runGame():
             glutils.scroll(0, player.y - CAMERASLACK - camy)
             camy = player.y - CAMERASLACK
 
-        # Keep track of viewing section
-        section += int(prev_y / WINHEIGHT) - int(camy / WINHEIGHT)
-        if not section == prev_section:
-            if section > len(page.sections) + 1:
+        # Keep track of viewing segment
+        segment += int(prev_y / WINHEIGHT) - int(camy / WINHEIGHT)
+        if not segment == prev_segment:
+            if segment > len(page.segments) + 1:
                 glutils.scroll(-camx, -camy) # Reset glMatrix
                 return
             page.visible_words = page.words[
-                    page.sections[min(len(page.sections) - 1, max(0, section - 1))]:
-                    page.sections[max(0, min(len(page.sections) - 1, section + 1))]]
+                    page.segments[min(len(page.segments) - 1, max(0, segment - 1))]:
+                    page.segments[max(0, min(len(page.segments) - 1, segment + 1))]]
 
         # Slow to FPS
         fpsclock.tick(FPS)
